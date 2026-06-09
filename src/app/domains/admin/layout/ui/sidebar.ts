@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
-import { MatButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
 import { Navigation } from '@/app/domains/admin/layout/ui/navigation';
 import { User } from '@/app/domains/admin/layout/ui/user';
 
 @Component({
   selector: 'admin-sidebar',
-  imports: [Navigation, User, MatButton, MatIcon],
+  imports: [Navigation, User],
   host: {
     class: 'flex w-full flex-auto flex-col',
   },
@@ -17,19 +15,24 @@ import { User } from '@/app/domains/admin/layout/ui/user';
       <img
         src="/images/logo/logo.svg"
         class="size-8"
-        alt="Fuse logo"
+        alt=" logo"
       />
 
       <div class="flex flex-col">
         <div
           class="text-on-surface text-lg leading-none font-bold tracking-wider"
         >
-          FUSE
+          D3Apps
         </div>
         <div class="font-mono text-2xs leading-3 font-medium tracking-tighter">
           Angular
         </div>
       </div>
+    </div>
+
+    <!-- User -->
+    <div class="p-2">
+      <user />
     </div>
 
     <!-- Navigation -->
@@ -38,7 +41,7 @@ import { User } from '@/app/domains/admin/layout/ui/user';
     <!-- Spacer -->
     <div class="flex-auto"></div>
 
-    <!-- Sidebar notification -->
+    <!-- Sidebar notification 
     <div
       class="m-4 mb-2 rounded-lg border border-neutral-900/5 bg-neutral-900/5 p-4 dark:border-neutral-50/5 dark:bg-neutral-50/5"
     >
@@ -57,12 +60,7 @@ import { User } from '@/app/domains/admin/layout/ui/user';
           iconPositionEnd
         />
       </button>
-    </div>
-
-    <!-- Footer -->
-    <div class="p-2">
-      <user />
-    </div>
+    </div>-->
   `,
 })
 export class AdminSidebar {}

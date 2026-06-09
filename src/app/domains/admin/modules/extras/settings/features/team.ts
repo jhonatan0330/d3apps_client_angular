@@ -67,7 +67,7 @@ import { MatSelect, MatSelectTrigger } from '@angular/material/select';
           </div>
           <div class="mt-4 flex items-center sm:mt-0 sm:ml-auto">
             <div class="order-2 ml-4 sm:order-1 sm:ml-0">
-              <mat-form-field class="fuse-mat-dense w-32">
+              <mat-form-field class="d3apps-mat-dense w-32">
                 <mat-select
                   [panelClass]="'w-72 min-w-72 max-w-72 h-auto max-h-none'"
                   [value]="member.role"

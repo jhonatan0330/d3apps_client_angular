@@ -2,11 +2,14 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "schematicCollections": ["angular-eslint"]
+    "schematicCollections": [
+      "angular-eslint"
+    ],
+    "analytics": false
   },
   "newProjectRoot": "projects",
   "projects": {
-    "fuse": {
+    "d3apps": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -57,10 +60,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "fuse:build:production"
+              "buildTarget": "d3apps:build:production"
             },
             "development": {
-              "buildTarget": "fuse:build:development"
+              "buildTarget": "d3apps:build:development"
             }
           },
           "defaultConfiguration": "development"

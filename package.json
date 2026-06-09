@@ -1,10 +1,7 @@
 {
-  "name": "fuse-angular",
+  "name": "d3apps-angular",
   "version": "21.1.0",
   "private": true,
-  "description": "Fuse - Angular Admin Template and Starter Kit",
-  "license": "https://themeforest.net/licenses/standard",
-  "author": "Sercan Yemen <hi@srcn.dev> (https://themeforest.net/user/srcn)",
   "scripts": {
     "build": "ng build",
     "lint": "ng lint",
