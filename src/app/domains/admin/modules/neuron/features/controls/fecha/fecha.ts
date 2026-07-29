@@ -36,7 +36,7 @@ import { BaseComponent } from '../base/base';
         }
         <mat-datepicker #pickerFrom></mat-datepicker>
       </mat-form-field>
-      @if (conHora && data?.valorFecha) {
+      @if (conHora && data.valorFecha) {
         <div class="relative left-24 -top-10 h-0" [style.display]="isInvisible ? 'none': 'block'">
           <input matInput type="time" [readonly]="!isEnabled" [required]="required" [formControl]="timeFrom" />
         </div>

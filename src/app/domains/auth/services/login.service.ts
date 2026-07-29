@@ -246,7 +246,9 @@ export class LoginService {
           return !!profile;
         }),
         catchError(() => {
-          this.signout();
+          if (!this._isAuthenticated) {
+            this.signout();
+          }
           return of(false);
         }),
       );
@@ -415,7 +417,7 @@ export class LoginService {
 
   configureOrganization(organization: OrganizacionDTO): void {
     this.setCompany(organization);
-    if (organization?.publicToken) {
+    if (!this._isAuthenticated && organization?.publicToken) {
       this.token = organization.publicToken;
       this.ls.setItem(LocalConstants.JWT_TOKEN, organization.publicToken);
       this.checkTokenIsValid().subscribe();

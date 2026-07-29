@@ -1,10 +1,12 @@
 import { Routes } from '@angular/router';
 import { AdminLayout } from './layout/layout';
+import { authGuard } from '@/app/shared/guards/auth.guard';
 
 const routes: Routes = [
   {
     path: '',
     component: AdminLayout,
+    canActivate: [authGuard],
     children: [
       // Redirect empty path to '/auth/sign-in'
       { path: '', pathMatch: 'full', redirectTo: '/auth/sign-in' },

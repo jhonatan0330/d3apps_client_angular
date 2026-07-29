@@ -15,7 +15,7 @@
       </span>
       @if (pedido && pedido.llaveTabla) {
         <a class="cursor-pointer h-6 px-1" (click)="showTrace()">
-          <mat-icon [style.color]="getColorFont()" svgIcon="heroicons_outline:clock"></mat-icon>
+          <mat-icon [style.color]="getColorFont()" svgIcon="clock"></mat-icon>
         </a>
       }
       @if (!fullScreen) {
@@ -70,7 +70,7 @@
         </button>
         @if (pedido && pedido.llaveTabla) {
           <button mat-menu-item (click)="reloadScreen()" tabindex="-1">
-            <mat-icon svgIcon="heroicons_outline:arrow-path-rounded-square"></mat-icon>Recargar
+            <mat-icon svgIcon="refresh-cw"></mat-icon>Recargar
           </button>
         }
         @if (pedido && pedido.llaveTabla) {
@@ -178,7 +178,7 @@
               <a class="cursor-pointer flex-auto" (click)="showReport(r)">
                 <div class="p-1 w-full h-full items-center flex justify-center">
                   <div class="flex shrink-0 items-center justify-center h-8 w-8 rounded-full bg-gray-400">
-                    <mat-icon class="icon-size-5 text-white" svgIcon="heroicons_outline:printer"></mat-icon>
+                    <mat-icon class="icon-size-5 text-white" svgIcon="printer"></mat-icon>
                   </div>
                   <div class="pl-2 text-sm font-bold">{{ r.nombre | slice: 0:30 }}</div>
                 </div>
@@ -187,7 +187,7 @@
             <a class="cursor-pointer flex-auto" (click)="showTrace()">
               <div class="p-1 w-full h-full items-center flex justify-center">
                 <div class="flex shrink-0 items-center justify-center h-8 w-8 rounded-full bg-gray-400">
-                  <mat-icon class="icon-size-5 text-white" svgIcon="heroicons_outline:clock"></mat-icon>
+                  <mat-icon class="icon-size-5 text-white" svgIcon="clock"></mat-icon>
                 </div>
                 <div class="pl-2 text-sm font-bold">HISTORIAL</div>
               </div>

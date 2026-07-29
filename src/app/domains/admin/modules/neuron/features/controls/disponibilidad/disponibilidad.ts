@@ -7,7 +7,7 @@ import { BaseComponent } from '../base/base';
   template: `
     <div [style.display]="(isInvisible || isSectionInvisible) ? 'none': 'block'" class="py-2">
       <div class="text-sm font-medium mb-1">{{ structure.nombre }}</div>
-      @if (data?.valorText) {
+      @if (data.valorText) {
         <div class="text-sm text-gray-600">{{ data.valorText }}</div>
       } @else {
         <div class="text-xs text-gray-400">Sin disponibilidad definida</div>

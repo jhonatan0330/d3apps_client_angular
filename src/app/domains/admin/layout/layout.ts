@@ -12,6 +12,8 @@ import { Media } from '@/app/core/media';
 import { LanguageSwitcher } from '@/app/domains/admin/layout/ui/language-switcher';
 import { Notifications } from '@/app/domains/admin/layout/ui/notifications';
 import { SchemeSwitcher } from '@/app/domains/admin/layout/ui/scheme-switcher';
+import { Shortcuts } from '@/app/domains/admin/layout/ui/shortcuts';
+import { User } from '@/app/domains/admin/layout/ui/user';
 import { AdminSidebar } from '@/app/domains/admin/layout/ui/sidebar';
 import { MatDialog } from '@angular/material/dialog';
 import { BuscadorComponent } from '@/app/domains/admin/layout/ui/buscador';
@@ -28,6 +30,8 @@ import { BuscadorComponent } from '@/app/domains/admin/layout/ui/buscador';
     AdminSidebar,
     SchemeSwitcher,
     Notifications,
+    Shortcuts,
+    User,
     LanguageSwitcher,
     MatTooltipModule,
   ],
@@ -85,9 +89,11 @@ import { BuscadorComponent } from '@/app/domains/admin/layout/ui/buscador';
           </button>
 
           <div class="flex items-center gap-x-2">
+            <shortcuts />
             <language-switcher />
             <scheme-switcher />
             <notifications />
+            <user />
           </div>
         </div>
 

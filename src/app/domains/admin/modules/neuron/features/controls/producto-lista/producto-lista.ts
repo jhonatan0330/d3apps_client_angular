@@ -9,7 +9,7 @@ import { BaseComponent } from '../base/base';
   template: `
     <div [style.display]="(isInvisible || isSectionInvisible) ? 'none': 'block'" class="py-2">
       <div class="text-sm font-medium mb-1">{{ structure.nombre }}</div>
-      @if (data?.detalles?.length) {
+      @if (data.detalles.length) {
         <div class="space-y-1">
           @for (detalle of data.detalles; track detalle.detalleId) {
             <div class="flex justify-between items-center text-sm border-b pb-1">

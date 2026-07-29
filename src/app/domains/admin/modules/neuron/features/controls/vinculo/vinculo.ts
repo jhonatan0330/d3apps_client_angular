@@ -15,8 +15,8 @@ import { BaseComponent } from '../base/base';
   template: `
     <mat-form-field [style.display]="isInvisible ? 'none': 'block'" class="w-full">
       <mat-label>{{ structure.nombre }}</mat-label>
-      <input matInput [value]="data?.valorText || ''" [readonly]="true" autocomplete="off" />
-      @if (data?.expedientes && data.expedientes.length > 0) {
+      <input matInput [value]="data.valorText || ''" [readonly]="true" autocomplete="off" />
+      @if (data.expedientes && data.expedientes.length > 0) {
         <button mat-icon-button matSuffix (click)="openVinculo()" tabindex="-1">
           <mat-icon>open_in_new</mat-icon>
         </button>

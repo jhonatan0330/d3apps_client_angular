@@ -25,6 +25,7 @@ import {
 } from 'ng-apexcharts';
 import { Theming } from '@/app/core/theming';
 import { AnalyticsDashboardService } from '@/app/domains/admin/modules/dashboards/data/analytics';
+import { DashboardCard } from '@/app/domains/admin/modules/dashboards/features/card/card';
 
 @Component({
   selector: 'analytics-dashboard',
@@ -35,9 +36,9 @@ import { AnalyticsDashboardService } from '@/app/domains/admin/modules/dashboard
     MatButtonToggleModule,
     MatTooltipModule,
     DecimalPipe,
-    MatCard,
     MatDivider,
     ChartComponent,
+    DashboardCard,
   ],
   template: `
     <div
@@ -65,13 +66,12 @@ import { AnalyticsDashboardService } from '@/app/domains/admin/modules/dashboard
       </div>
 
       <!-- Visitors -->
-      <mat-card
-        class="overflow-hidden"
+      <dashboard-card
+        title="Visitors"
         appearance="outlined"
+        cardClass="overflow-hidden"
       >
-        <div class="flex items-center justify-between gap-x-4 p-6 pb-0">
-          <div class="text-xl font-semibold sm:text-2xl">Visitors</div>
-
+        <div card-menu>
           <mat-button-toggle-group
             value="this-year"
             #visitorsYearSelector="matButtonToggleGroup"
@@ -96,30 +96,25 @@ import { AnalyticsDashboardService } from '@/app/domains/admin/modules/dashboard
             [yaxis]="visitorsChart.yaxis"
           ></apx-chart>
         </div>
-      </mat-card>
+      </dashboard-card>
 
       <div class="grid w-full grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
         <!-- Conversions -->
-        <mat-card
-          class="overflow-hidden"
+        <dashboard-card
+          title="Conversions"
           appearance="outlined"
+          cardClass="overflow-hidden"
         >
-          <div class="flex flex-col gap-y-2 p-6 pb-0">
-            <div class="truncate text-lg font-medium tracking-tight">
-              Conversions
-            </div>
-
-            <div class="text-4xl font-semibold">
-              {{ data.conversions.amount | number: '1.0-0' }}
-            </div>
-            <div class="flex items-center gap-x-1">
-              <mat-icon
-                class="text-red-600"
-                svgIcon="trending-down"
-              />
-              <div class="font-medium text-red-600">2%</div>
-              <div class="text-neutral-500">below target</div>
-            </div>
+          <div class="text-4xl font-semibold px-6 pt-2">
+            {{ data.conversions.amount | number: '1.0-0' }}
+          </div>
+          <div class="flex items-center gap-x-1 px-6 pb-2">
+            <mat-icon
+              class="text-red-600"
+              svgIcon="trending-down"
+            />
+            <div class="font-medium text-red-600">2%</div>
+            <div class="text-neutral-500">below target</div>
           </div>
 
           <div class="flex flex-auto flex-col">
@@ -133,29 +128,24 @@ import { AnalyticsDashboardService } from '@/app/domains/admin/modules/dashboard
               [tooltip]="conversionsChart.tooltip"
             ></apx-chart>
           </div>
-        </mat-card>
+        </dashboard-card>
 
         <!-- Impressions -->
-        <mat-card
-          class="overflow-hidden"
+        <dashboard-card
+          title="Impressions"
           appearance="outlined"
+          cardClass="overflow-hidden"
         >
-          <div class="flex flex-col gap-y-2 p-6 pb-0">
-            <div class="truncate text-lg font-medium tracking-tight">
-              Impressions
-            </div>
-
-            <div class="text-4xl font-semibold">
-              {{ data.impressions.amount | number: '1.0-0' }}
-            </div>
-            <div class="flex items-center gap-x-1">
-              <mat-icon
-                class="text-red-600"
-                svgIcon="trending-down"
-              />
-              <div class="font-medium text-red-600">2%</div>
-              <div class="text-neutral-500">below target</div>
-            </div>
+          <div class="text-4xl font-semibold px-6 pt-2">
+            {{ data.impressions.amount | number: '1.0-0' }}
+          </div>
+          <div class="flex items-center gap-x-1 px-6 pb-2">
+            <mat-icon
+              class="text-red-600"
+              svgIcon="trending-down"
+            />
+            <div class="font-medium text-red-600">2%</div>
+            <div class="text-neutral-500">below target</div>
           </div>
 
           <div class="flex flex-auto flex-col">
@@ -169,29 +159,24 @@ import { AnalyticsDashboardService } from '@/app/domains/admin/modules/dashboard
               [tooltip]="impressionsChart.tooltip"
             ></apx-chart>
           </div>
-        </mat-card>
+        </dashboard-card>
 
         <!-- Visits -->
-        <mat-card
-          class="overflow-hidden"
+        <dashboard-card
+          title="Visits"
           appearance="outlined"
+          cardClass="overflow-hidden"
         >
-          <div class="flex flex-col gap-y-2 p-6 pb-0">
-            <div class="truncate text-lg font-medium tracking-tight">
-              Visits
-            </div>
-
-            <div class="text-4xl font-semibold">
-              {{ data.visits.amount | number: '1.0-0' }}
-            </div>
-            <div class="flex items-center gap-x-1">
-              <mat-icon
-                class="text-green-600"
-                svgIcon="trending-up"
-              />
-              <div class="font-medium text-green-600">3%</div>
-              <div class="text-neutral-500">above target</div>
-            </div>
+          <div class="text-4xl font-semibold px-6 pt-2">
+            {{ data.visits.amount | number: '1.0-0' }}
+          </div>
+          <div class="flex items-center gap-x-1 px-6 pb-2">
+            <mat-icon
+              class="text-green-600"
+              svgIcon="trending-up"
+            />
+            <div class="font-medium text-green-600">3%</div>
+            <div class="text-neutral-500">above target</div>
           </div>
 
           <div class="flex flex-auto flex-col">
@@ -205,7 +190,7 @@ import { AnalyticsDashboardService } from '@/app/domains/admin/modules/dashboard
               [tooltip]="visitsChart.tooltip"
             ></apx-chart>
           </div>
-        </mat-card>
+        </dashboard-card>
       </div>
 
       <!-- Section title -->
@@ -220,88 +205,83 @@ import { AnalyticsDashboardService } from '@/app/domains/admin/modules/dashboard
       </div>
 
       <!-- Visitors vs. Page Views -->
-      <mat-card
-        class="overflow-hidden"
+      <dashboard-card
+        title="Visitors vs. Page Views"
         appearance="outlined"
+        cardClass="overflow-hidden"
       >
-        <div class="flex flex-col items-start justify-between gap-y-4 p-6 pb-0">
-          <div class="truncate text-lg leading-6 font-medium tracking-tight">
-            Visitors vs. Page Views
+        <div class="grid grid-cols-1 gap-8 p-6 pb-0 sm:grid-cols-3 sm:gap-12">
+          <div class="flex flex-col">
+            <div class="flex items-center">
+              <div class="leading-5 font-medium text-neutral-500">
+                Overall Score
+              </div>
+              <mat-icon
+                class="ml-1.5 size-4 text-neutral-500"
+                svgIcon="info"
+                [matTooltip]="'Score is calculated by using the historical ratio between Page Views and Visitors. Best score is 1000, worst score is 0.'"
+              />
+            </div>
+            <div class="mt-2 flex items-end gap-x-2">
+              <div class="text-4xl leading-none font-bold tracking-tight">
+                {{ data.visitorsVsPageViews.overallScore }}
+              </div>
+              <div class="flex items-center gap-x-1">
+                <mat-icon
+                  class="text-green-600"
+                  svgIcon="arrow-up"
+                />
+                <div class="font-medium text-green-600">42.9%</div>
+              </div>
+            </div>
           </div>
-
-          <div class="grid grid-cols-1 gap-8 sm:grid-cols-3 sm:gap-12">
-            <div class="flex flex-col">
-              <div class="flex items-center">
-                <div class="leading-5 font-medium text-neutral-500">
-                  Overall Score
-                </div>
-                <mat-icon
-                  class="ml-1.5 size-4 text-neutral-500"
-                  svgIcon="info"
-                  [matTooltip]="'Score is calculated by using the historical ratio between Page Views and Visitors. Best score is 1000, worst score is 0.'"
-                />
+          <div class="flex flex-col">
+            <div class="flex items-center">
+              <div class="leading-5 font-medium text-neutral-500">
+                Average Ratio
               </div>
-              <div class="mt-2 flex items-end gap-x-2">
-                <div class="text-4xl leading-none font-bold tracking-tight">
-                  {{ data.visitorsVsPageViews.overallScore }}
-                </div>
-                <div class="flex items-center gap-x-1">
-                  <mat-icon
-                    class="text-green-600"
-                    svgIcon="arrow-up"
-                  />
-                  <div class="font-medium text-green-600">42.9%</div>
-                </div>
+              <mat-icon
+                class="ml-1.5 size-4 text-neutral-500"
+                svgIcon="info"
+                [matTooltip]="'Average Ratio is the average ratio between Page Views and Visitors'"
+              />
+            </div>
+            <div class="mt-2 flex items-end gap-x-2">
+              <div class="text-4xl leading-none font-bold tracking-tight">
+                {{ data.visitorsVsPageViews.averageRatio | number: '1.0-0' }}%
+              </div>
+              <div class="flex items-center gap-x-1">
+                <mat-icon
+                  class="text-red-600"
+                  svgIcon="arrow-down"
+                />
+                <div class="font-medium text-red-600">13.1%</div>
               </div>
             </div>
-            <div class="flex flex-col">
-              <div class="flex items-center">
-                <div class="leading-5 font-medium text-neutral-500">
-                  Average Ratio
-                </div>
-                <mat-icon
-                  class="ml-1.5 size-4 text-neutral-500"
-                  svgIcon="info"
-                  [matTooltip]="'Average Ratio is the average ratio between Page Views and Visitors'"
-                />
+          </div>
+          <div class="flex flex-col">
+            <div class="flex items-center">
+              <div class="leading-5 font-medium text-neutral-500">
+                Predicted Ratio
               </div>
-              <div class="mt-2 flex items-end gap-x-2">
-                <div class="text-4xl leading-none font-bold tracking-tight">
-                  {{ data.visitorsVsPageViews.averageRatio | number: '1.0-0' }}%
-                </div>
-                <div class="flex items-center gap-x-1">
-                  <mat-icon
-                    class="text-red-600"
-                    svgIcon="arrow-down"
-                  />
-                  <div class="font-medium text-red-600">13.1%</div>
-                </div>
-              </div>
+              <mat-icon
+                class="ml-1.5 size-4 text-neutral-500"
+                svgIcon="info"
+                [matTooltip]="'Predicted Ratio is calculated by using historical ratio, current trends and your goal targets.'"
+              />
             </div>
-            <div class="flex flex-col">
-              <div class="flex items-center">
-                <div class="leading-5 font-medium text-neutral-500">
-                  Predicted Ratio
-                </div>
-                <mat-icon
-                  class="ml-1.5 size-4 text-neutral-500"
-                  svgIcon="info"
-                  [matTooltip]="'Predicted Ratio is calculated by using historical ratio, current trends and your goal targets.'"
-                />
+            <div class="mt-2 flex items-end gap-x-2">
+              <div class="text-4xl leading-none font-bold tracking-tight">
+                {{
+                  data.visitorsVsPageViews.predictedRatio | number: '1.0-0'
+                }}%
               </div>
-              <div class="mt-2 flex items-end gap-x-2">
-                <div class="text-4xl leading-none font-bold tracking-tight">
-                  {{
-                    data.visitorsVsPageViews.predictedRatio | number: '1.0-0'
-                  }}%
-                </div>
-                <div class="flex items-center gap-x-1">
-                  <mat-icon
-                    class="text-green-600"
-                    svgIcon="arrow-up"
-                  />
-                  <div class="font-medium text-green-600">22.2%</div>
-                </div>
+              <div class="flex items-center gap-x-1">
+                <mat-icon
+                  class="text-green-600"
+                  svgIcon="arrow-up"
+                />
+                <div class="font-medium text-green-600">22.2%</div>
               </div>
             </div>
           </div>
@@ -322,21 +302,18 @@ import { AnalyticsDashboardService } from '@/app/domains/admin/modules/dashboard
             [yaxis]="visitorsVsPageViewsChart.yaxis"
           ></apx-chart>
         </div>
-      </mat-card>
+      </dashboard-card>
 
       <div
         class="mt-6 grid w-full grid-cols-1 gap-8 sm:grid-cols-2 md:mt-8 lg:grid-cols-4"
       >
         <!-- New vs. Returning -->
-        <mat-card
-          class="p-6"
+        <dashboard-card
+          title="New vs. Returning"
           appearance="outlined"
+          cardClass="p-6"
         >
-          <div class="truncate text-lg font-medium tracking-tighter">
-            New vs. Returning
-          </div>
-
-          <div class="mt-6 flex flex-auto flex-col items-center">
+          <div class="flex flex-auto flex-col items-center">
             <apx-chart
               class="h-44"
               [chart]="newVsReturningChart.chart"
@@ -370,18 +347,15 @@ import { AnalyticsDashboardService } from '@/app/domains/admin/modules/dashboard
               }
             }
           </div>
-        </mat-card>
+        </dashboard-card>
 
         <!-- Gender -->
-        <mat-card
-          class="p-6"
+        <dashboard-card
+          title="Gender"
           appearance="outlined"
+          cardClass="p-6"
         >
-          <div class="truncate text-lg font-medium tracking-tighter">
-            Gender
-          </div>
-
-          <div class="mt-6 flex flex-auto flex-col items-center">
+          <div class="flex flex-auto flex-col items-center">
             <apx-chart
               class="h-44"
               [chart]="genderChart.chart"
@@ -414,16 +388,15 @@ import { AnalyticsDashboardService } from '@/app/domains/admin/modules/dashboard
               }
             }
           </div>
-        </mat-card>
+        </dashboard-card>
 
         <!-- Age -->
-        <mat-card
-          class="p-6"
+        <dashboard-card
+          title="Age"
           appearance="outlined"
+          cardClass="p-6"
         >
-          <div class="truncate text-lg font-medium tracking-tighter">Age</div>
-
-          <div class="mt-6 flex flex-auto flex-col items-center">
+          <div class="flex flex-auto flex-col items-center">
             <apx-chart
               class="h-44"
               [chart]="ageChart.chart"
@@ -456,18 +429,15 @@ import { AnalyticsDashboardService } from '@/app/domains/admin/modules/dashboard
               }
             }
           </div>
-        </mat-card>
+        </dashboard-card>
 
         <!-- Language -->
-        <mat-card
-          class="p-6"
+        <dashboard-card
+          title="Language"
           appearance="outlined"
+          cardClass="p-6"
         >
-          <div class="truncate text-lg font-medium tracking-tighter">
-            Language
-          </div>
-
-          <div class="mt-6 flex flex-auto flex-col items-center">
+          <div class="flex flex-auto flex-col items-center">
             <apx-chart
               class="h-44"
               [chart]="languageChart.chart"
@@ -501,7 +471,7 @@ import { AnalyticsDashboardService } from '@/app/domains/admin/modules/dashboard
               }
             }
           </div>
-        </mat-card>
+        </dashboard-card>
       </div>
     </div>
   `,

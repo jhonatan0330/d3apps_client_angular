@@ -98,12 +98,12 @@ import { getComponent } from '@/app/domains/admin/modules/neuron/helpers/form-he
                 @if (viewMode !== 'grid-view' && plantilla()?.reportes?.length) {
                   <div class="py-1">
                     <button mat-flat-button color="accent" class="w-full" [matMenuTriggerFor]="userMenuList">
-                      <mat-icon svgIcon="heroicons_outline:printer"></mat-icon> Imprimir
+                      <mat-icon svgIcon="printer"></mat-icon> Imprimir
                     </button>
                     <mat-menu #userMenuList="matMenu">
                       @for (r of plantilla()?.reportes; track r.llaveTabla) {
                         <button mat-menu-item (click)="showReport(r, null)">
-                          <mat-icon svgIcon="heroicons_outline:printer"></mat-icon>
+                          <mat-icon svgIcon="printer"></mat-icon>
                           <span>{{ r.nombre }}</span>
                         </button>
                       }
@@ -113,12 +113,12 @@ import { getComponent } from '@/app/domains/admin/modules/neuron/helpers/form-he
                 @if (reportForms()) {
                   <div class="py-1">
                     <button mat-flat-button color="accent" class="w-full" [matMenuTriggerFor]="reportFormMenuList">
-                      <mat-icon svgIcon="heroicons_outline:printer"></mat-icon> Informes
+                      <mat-icon svgIcon="printer"></mat-icon> Informes
                     </button>
                     <mat-menu #reportFormMenuList="matMenu">
                       @for (rf of reportForms(); track rf.llaveTabla) {
                         <button mat-menu-item (click)="openDialog(rf.valor, '')">
-                          <mat-icon svgIcon="heroicons_outline:printer"></mat-icon>
+                          <mat-icon svgIcon="printer"></mat-icon>
                           <span>{{ rf.texto }}</span>
                         </button>
                       }
@@ -155,7 +155,7 @@ import { getComponent } from '@/app/domains/admin/modules/neuron/helpers/form-he
               <mat-form-field subscriptSizing="dynamic">
                 <input matInput type="text" placeholder="Coloca un texto y presiona enter" [formControl]="fControlSearch" autocomplete="off" (keyup.enter)="listar(1)" />
                 <button matSuffix mat-icon-button (click)="fControlSearch.setValue('')">
-                  <mat-icon svgIcon="heroicons_outline:x-circle"></mat-icon>
+                  <mat-icon svgIcon="x-circle"></mat-icon>
                 </button>
               </mat-form-field>
               <button class="w-full" mat-flat-button color="accent" (click)="listar(1)">
@@ -285,7 +285,7 @@ import { getComponent } from '@/app/domains/admin/modules/neuron/helpers/form-he
                   }
                 }
                 <button mat-icon-button class="m-1" (click)="toggleDrawer()">
-                  <mat-icon svgIcon="heroicons_outline:bars-3"></mat-icon>
+                  <mat-icon svgIcon="menu"></mat-icon>
                 </button>
               </div>
 
@@ -321,7 +321,7 @@ import { getComponent } from '@/app/domains/admin/modules/neuron/helpers/form-he
                               <mat-menu #userMenu="matMenu">
                                 @for (r of plantilla()?.reportes; track r.llaveTabla) {
                                   <button mat-menu-item (click)="showReport(r, iDocument)">
-                                    <mat-icon svgIcon="heroicons_outline:printer"></mat-icon>
+                                    <mat-icon svgIcon="printer"></mat-icon>
                                     <span>{{ r.nombre }}</span>
                                   </button>
                                 }
@@ -339,11 +339,11 @@ import { getComponent } from '@/app/domains/admin/modules/neuron/helpers/form-he
                             </div>
                           }
                         </div>
-                        @if (iDocument.caracteristicas?.length) {
+                        @if (iDocument.caracteristicas.length) {
                           <div class="p-1">
                             @for (f of iDocument.caracteristicas; track f.campo) {
                               <div class="flex items-center text-xs">
-                                <small class="whitespace-nowrap font-extralight mr-2">{{ f.campoDTO?.nombre }}</small>
+                                <small class="whitespace-nowrap font-extralight mr-2">{{ f.campoDTO.nombre }}</small>
                                 @if (f.valorText) {
                                   <div class="text-right w-full truncate text-md">
                                     @if (f.valorText.startsWith('http')) {
@@ -449,7 +449,7 @@ import { getComponent } from '@/app/domains/admin/modules/neuron/helpers/form-he
                         <mat-menu #userMenu="matMenu">
                           @for (r of plantilla()?.reportes; track r.llaveTabla) {
                             <button mat-menu-item (click)="showReport(r, element)">
-                              <mat-icon svgIcon="heroicons_outline:printer"></mat-icon>
+                              <mat-icon svgIcon="printer"></mat-icon>
                               <span>{{ r.nombre }}</span>
                             </button>
                           }
@@ -474,7 +474,7 @@ import { getComponent } from '@/app/domains/admin/modules/neuron/helpers/form-he
                     <p class="mb-3 text-sm text-neutral-500 dark:text-neutral-400">
                       Para encontrar lo que necesitas, simplemente utiliza los filtros.
                       <button class="align-middle" mat-icon-button (click)="toggleDrawer()">
-                        <mat-icon svgIcon="heroicons_outline:bars-3"></mat-icon>
+                        <mat-icon svgIcon="menu"></mat-icon>
                       </button>
                     </p>
                     <button mat-flat-button class="w-full" (click)="listar(pagina())">Buscar</button>
@@ -491,7 +491,7 @@ import { getComponent } from '@/app/domains/admin/modules/neuron/helpers/form-he
                     <p class="mb-3 text-sm text-neutral-500 dark:text-neutral-400">
                       Lo sentimos, no encontramos ningun resultado para tu busqueda.
                       <button class="align-middle" mat-icon-button (click)="toggleDrawer()">
-                        <mat-icon svgIcon="heroicons_outline:bars-3"></mat-icon>
+                        <mat-icon svgIcon="menu"></mat-icon>
                       </button>
                     </p>
                     <button mat-flat-button class="w-full" (click)="listar(pagina())">Buscar</button>
@@ -511,7 +511,7 @@ import { getComponent } from '@/app/domains/admin/modules/neuron/helpers/form-he
                     }
                     <div class="flex items-center gap-2">
                       <button mat-icon-button (click)="toggleDrawer()">
-                        <mat-icon svgIcon="heroicons_outline:bars-3"></mat-icon>
+                        <mat-icon svgIcon="menu"></mat-icon>
                       </button>
                       <span class="font-medium">Total: {{ dataProvider().length }}</span>
                     </div>

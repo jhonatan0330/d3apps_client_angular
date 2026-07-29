@@ -1,7 +1,7 @@
 import { CurrencyPipe, DatePipe, NgClass } from '@angular/common';
 import { afterNextRender, Component, inject, viewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCard } from '@angular/material/card';
+import { DashboardCard } from '@/app/domains/admin/modules/dashboards/features/card/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -28,7 +28,7 @@ import {
     MatProgressBarModule,
     CurrencyPipe,
     DatePipe,
-    MatCard,
+    DashboardCard,
   ],
   template: `
     <div
@@ -93,9 +93,9 @@ import {
       <div class="grid w-full grid-cols-1 gap-6 xl:grid-cols-2">
         <div class="grid gap-8 sm:grid-flow-col xl:grid-flow-row">
           <!-- Previous statement -->
-          <mat-card
-            class="overflow-hidden px-5 py-4"
+          <dashboard-card
             appearance="outlined"
+            cardClass="overflow-hidden px-5 py-4"
           >
             <div class="absolute right-0 bottom-0 -m-6 h-24 w-24">
               <mat-icon
@@ -151,12 +151,12 @@ import {
                 </div>
               </div>
             </div>
-          </mat-card>
+          </dashboard-card>
 
           <!-- Current statement -->
-          <mat-card
-            class="overflow-hidden px-5 py-4"
+          <dashboard-card
             appearance="outlined"
+            cardClass="overflow-hidden px-5 py-4"
           >
             <div class="absolute right-0 bottom-0 -m-6 h-24 w-24">
               <mat-icon
@@ -213,44 +213,38 @@ import {
                 </div>
               </div>
             </div>
-          </mat-card>
+          </dashboard-card>
         </div>
 
         <!-- Account balance -->
-        <mat-card
-          class="overflow-hidden"
+        <dashboard-card
+          title="Account Balance"
           appearance="outlined"
+          cardClass="overflow-hidden"
         >
-          <div class="flex flex-col px-5 py-4">
+          <div class="font-medium text-neutral-500 px-5">
+            Monthly balance growth and avg. monthly income
+          </div>
+
+          <div class="mt-6 mr-2 flex items-start px-5">
             <div class="flex flex-col">
-              <div class="mr-4 truncate text-lg font-medium tracking-tight">
-                Account Balance
+              <div
+                class="text-3xl font-semibold tracking-tighter md:text-4xl"
+              >
+                {{ data.accountBalance.growRate }}%
               </div>
-              <div class="font-medium text-neutral-500">
-                Monthly balance growth and avg. monthly income
+              <div class="text-sm font-medium text-neutral-500">
+                Average Monthly Growth
               </div>
             </div>
-
-            <div class="mt-6 mr-2 flex items-start">
-              <div class="flex flex-col">
-                <div
-                  class="text-3xl font-semibold tracking-tighter md:text-4xl"
-                >
-                  {{ data.accountBalance.growRate }}%
-                </div>
-                <div class="text-sm font-medium text-neutral-500">
-                  Average Monthly Growth
-                </div>
+            <div class="ml-8 flex flex-col md:ml-16">
+              <div
+                class="text-3xl font-semibold tracking-tighter md:text-4xl"
+              >
+                {{ data.accountBalance.ami | currency: 'USD' }}
               </div>
-              <div class="ml-8 flex flex-col md:ml-16">
-                <div
-                  class="text-3xl font-semibold tracking-tighter md:text-4xl"
-                >
-                  {{ data.accountBalance.ami | currency: 'USD' }}
-                </div>
-                <div class="text-sm font-medium text-neutral-500">
-                  Average Monthly Income
-                </div>
+              <div class="text-sm font-medium text-neutral-500">
+                Average Monthly Income
               </div>
             </div>
           </div>
@@ -266,19 +260,17 @@ import {
               [xaxis]="accountBalanceChart.xaxis!"
             ></apx-chart>
           </div>
-        </mat-card>
+        </dashboard-card>
       </div>
 
       <div class="grid w-full grid-cols-1 gap-6">
         <!-- Recent transactions table -->
-        <mat-card appearance="outlined">
-          <div class="p-6">
-            <div class="mr-4 truncate text-lg font-medium tracking-tight">
-              Recent transactions
-            </div>
-            <div class="font-medium text-neutral-500">
-              1 pending, 4 completed
-            </div>
+        <dashboard-card
+          title="Recent transactions"
+          appearance="outlined"
+        >
+          <div class="font-medium text-neutral-500 px-6">
+            1 pending, 4 completed
           </div>
           <div class="mx-6 overflow-x-auto">
             <table
@@ -424,22 +416,15 @@ import {
               ></tr>
             </table>
           </div>
-        </mat-card>
+        </dashboard-card>
 
         <!-- Budget -->
-        <mat-card
-          class="p-6"
+        <dashboard-card
+          title="Budget"
           appearance="outlined"
+          cardClass="p-6"
         >
-          <div class="flex items-center">
-            <div class="flex flex-col">
-              <div class="mr-4 truncate text-lg font-medium tracking-tight">
-                Budget
-              </div>
-              <div class="font-medium text-neutral-500">
-                Monthly budget summary
-              </div>
-            </div>
+          <div card-menu>
             <div class="-mt-2 -mr-2 ml-auto">
               <button
                 mat-icon-button
@@ -456,6 +441,9 @@ import {
                 <button mat-menu-item>Email budget summary</button>
               </mat-menu>
             </div>
+          </div>
+          <div class="font-medium text-neutral-500">
+            Monthly budget summary
           </div>
           <div class="mt-6 text-sm">
             Last month you had <strong>223</strong> expense transactions,
@@ -575,7 +563,7 @@ import {
               Download Summary
             </button>
           </div>
-        </mat-card>
+        </dashboard-card>
       </div>
     </div>
   `,

@@ -32,7 +32,7 @@ import { Observable, of } from 'rxjs';
           <mat-option [value]="opt">{{ opt.nombre }}</mat-option>
         }
       </mat-autocomplete>
-      @if (isEnabled && data?.valorOpcion) {
+      @if (isEnabled && data.valorOpcion) {
         <button mat-icon-button matSuffix (click)="openProcess()" tabindex="-1">
           <mat-icon>open_in_new</mat-icon>
         </button>

@@ -14,7 +14,7 @@ import { BaseComponent } from '../base/base';
     <div [style.display]="(isInvisible || isSectionInvisible) ? 'none': 'block'" class="py-2">
       <div class="text-sm font-medium mb-1">{{ structure.nombre }}</div>
       @if (isLoading) { <mat-progress-bar mode="indeterminate"></mat-progress-bar> }
-      @if (data?.valorText) {
+      @if (data.valorText) {
         <div class="flex items-center gap-2">
           <a [href]="data.valorText" target="_blank" class="text-blue-600 underline text-sm truncate max-w-[200px]">{{ data.valorText }}</a>
           @if (isEnabled) {
@@ -22,7 +22,7 @@ import { BaseComponent } from '../base/base';
           }
         </div>
       }
-      @if (isEnabled && !data?.valorText) {
+      @if (isEnabled && !data.valorText) {
         <button mat-stroked-button (click)="fileInput.click()">
           <mat-icon>upload_file</mat-icon> Seleccionar archivo
         </button>

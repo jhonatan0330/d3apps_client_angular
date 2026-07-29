@@ -1,3 +1,4 @@
+import { provideServiceWorker } from '@angular/service-worker';
 import { TranslocoHttpLoader } from '@/app/core/transloco/transloco-http-loader';
 import {
   provideHttpClient,
@@ -66,6 +67,11 @@ export const appConfig: ApplicationConfig = {
     }),
 
     // Third-party
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
+
     provideTransloco({
       config: {
         availableLangs: [

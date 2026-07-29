@@ -1,0 +1,19 @@
+{
+  "name": "D3Apps",
+  "short_name": "D3Apps",
+  "description": "D3Apps Angular FrontEnd",
+  "start_url": "/admin/main",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#1565C0",
+  "theme_color": "#1565C0",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

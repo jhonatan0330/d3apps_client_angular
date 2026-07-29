@@ -41,7 +41,7 @@ import { MatButtonModule } from '@angular/material/button';
                 } @else {
                   <div
                     class="flex h-full w-full items-center justify-center overflow-hidden rounded bg-gray-200 text-8xl font-bold uppercase leading-none text-gray-600 dark:bg-gray-700 dark:text-gray-200">
-                    {{ contact().nombre?.charAt(0) }}
+                    {{ contact().nombre.charAt(0) }}
                   </div>
                 }
               </div>
