@@ -1,6 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {
   MatSidenav,
   MatSidenavContainer,
@@ -12,8 +13,8 @@ import { LanguageSwitcher } from '@/app/domains/admin/layout/ui/language-switche
 import { Notifications } from '@/app/domains/admin/layout/ui/notifications';
 import { SchemeSwitcher } from '@/app/domains/admin/layout/ui/scheme-switcher';
 import { AdminSidebar } from '@/app/domains/admin/layout/ui/sidebar';
-import { MatFormField, MatPrefix } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
+import { MatDialog } from '@angular/material/dialog';
+import { BuscadorComponent } from '@/app/domains/admin/layout/ui/buscador';
 
 @Component({
   selector: 'admin-layout',
@@ -28,9 +29,7 @@ import { MatInput } from '@angular/material/input';
     SchemeSwitcher,
     Notifications,
     LanguageSwitcher,
-    MatFormField,
-    MatInput,
-    MatPrefix
+    MatTooltipModule,
   ],
   template: `
     <mat-sidenav-container>
@@ -76,18 +75,14 @@ import { MatInput } from '@angular/material/input';
             <mat-icon svgIcon="panel-left" />
           </button>
 
-          <!-- Spacer 
-          <div class="flex-auto"></div>-->
-          <mat-form-field class="flex-auto">
-          <input
-            type="text"
-            matInput
-          />
-          <mat-icon
-            svgIcon="search"
-            matIconPrefix
-          />
-        </mat-form-field>
+          <div class="flex-auto"></div>
+          <button
+            matIconButton
+            (click)="openDashboard()"
+            matTooltip="Buscar plantillas"
+          >
+            <mat-icon svgIcon="search" />
+          </button>
 
           <div class="flex items-center gap-x-2">
             <language-switcher />
@@ -105,9 +100,19 @@ import { MatInput } from '@angular/material/input';
 export class AdminLayout {
   // Dependencies
   private media = inject(Media);
+  private dialog = inject(MatDialog);
 
   // State
   protected isMobile = computed(() =>
     this.media.match(`(max-width: 1023px)`)()
   );
+
+  openDashboard() {
+    this.dialog.open(BuscadorComponent, {
+      maxWidth: '90vw',
+      maxHeight: '90vh',
+      width: '1200px',
+      panelClass: 'dashboard-dialog-panel',
+    });
+  }
 }

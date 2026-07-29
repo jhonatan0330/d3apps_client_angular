@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import {
   email,
   form,
@@ -8,11 +8,13 @@ import {
 } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDivider } from '@angular/material/divider';
+
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { Router, RouterLink } from '@angular/router';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { LoginService } from '@/app/domains/auth/services/login.service';
 
 @Component({
   selector: 'auth-sign-in',
@@ -24,32 +26,60 @@ import { Router, RouterLink } from '@angular/router';
     MatButtonModule,
     MatIconModule,
     MatCheckboxModule,
+    MatProgressBarModule,
     FormField,
-    MatDivider,
   ],
 })
-export default class AuthSignIn {
-  // Dependencies
-  private router = inject(Router);
+export default class AuthSignIn implements OnInit {
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly loginService = inject(LoginService);
 
-  // State
+  protected isLoading = signal(false);
+  protected errorMessage = signal('');
+
   protected signInFormModel = signal({
-    email: 'hughes.brian@company.com',
-    password: 'Secure-Password-123$%^',
+    email: '',
+    password: '',
   });
+
   protected signInForm = form(this.signInFormModel, (form) => {
-    required(form.email, { message: 'You must enter an email address' });
-    email(form.email, { message: 'You must enter a valid email address' });
-
-    required(form.password, { message: 'You must enter a password' });
+    required(form.email, { message: 'Debe ingresar un usuario' });
+    required(form.password, { message: 'Debe ingresar una contrasena' });
   });
 
-  signIn(event: Event) {
+  ngOnInit(): void {
+    this.loginService.getUrlServices();
+  }
+
+  signIn(event: Event): void {
     event.preventDefault();
 
     submit(this.signInForm, async () => {
-      // Navigate to a route, demo purposes only
-      this.router.navigateByUrl('/admin/dashboards');
+      this.isLoading.set(true);
+      this.errorMessage.set('');
+
+      const { email: username, password } = this.signInFormModel();
+
+      this.loginService.signin(username, password, null).subscribe({
+        next: (result) => {
+          if (result) {
+            this.loginService.authenticationOK(result);
+            const redirectURL =
+              this.route.snapshot.queryParamMap.get('redirectURL') || '/admin/main';
+            this.router.navigateByUrl(redirectURL);
+          }
+          this.isLoading.set(false);
+        },
+        error: (response: string) => {
+          this.isLoading.set(false);
+          if (response?.startsWith('Por seguridad')) {
+            this.router.navigateByUrl('/auth/forgot-password');
+          } else {
+            this.errorMessage.set(response || 'Error de autenticacion');
+          }
+        },
+      });
     });
   }
 }

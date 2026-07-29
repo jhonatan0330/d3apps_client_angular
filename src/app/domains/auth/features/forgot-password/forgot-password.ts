@@ -7,45 +7,69 @@ import {
   submit,
 } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCard } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { Router } from '@angular/router';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { Router, RouterLink } from '@angular/router';
+import { LoginService } from '@/app/domains/auth/services/login.service';
 
 @Component({
   selector: 'auth-forgot-password',
   templateUrl: './forgot-password.html',
   imports: [
+    RouterLink,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatCheckboxModule,
+    MatProgressBarModule,
     FormField,
-    MatCard,
   ],
 })
 export default class AuthForgotPassword {
-  // Dependencies
-  private router = inject(Router);
+  private readonly router = inject(Router);
+  private readonly loginService = inject(LoginService);
 
-  // State
-  protected forgotPasswordFormModel = signal({
+  protected isLoading = signal(false);
+  protected successMessage = signal('');
+  protected errorMessage = signal('');
+
+  protected forgotFormModel = signal({
+    identification: '',
     email: '',
   });
-  protected forgotPasswordForm = form(this.forgotPasswordFormModel, (form) => {
-    required(form.email, { message: 'You must enter an email address' });
-    email(form.email, { message: 'You must enter a valid email address' });
+
+  protected forgotForm = form(this.forgotFormModel, (form) => {
+    required(form.identification, { message: 'Debe ingresar su identificacion' });
+    required(form.email, { message: 'Debe ingresar su correo' });
+    email(form.email, { message: 'Debe ingresar un correo valido' });
   });
 
-  forgotPassword(event: Event) {
+  recoverPassword(event: Event): void {
     event.preventDefault();
 
-    submit(this.forgotPasswordForm, async () => {
-      // Navigate to a route, demo purposes only
-      this.router.navigateByUrl('/auth/reset-password');
+    submit(this.forgotForm, async () => {
+      this.isLoading.set(true);
+      this.errorMessage.set('');
+      this.successMessage.set('');
+
+      const { identification, email: correo } = this.forgotFormModel();
+
+      this.loginService.recoverPassword(identification, correo).subscribe({
+        next: () => {
+          this.isLoading.set(false);
+          this.successMessage.set(
+            'Se ha enviado un correo con las instrucciones para recuperar su contrasena.',
+          );
+        },
+        error: (response: string) => {
+          this.isLoading.set(false);
+          this.errorMessage.set(
+            response || 'Error al solicitar recuperacion de contrasena',
+          );
+        },
+      });
     });
   }
 }

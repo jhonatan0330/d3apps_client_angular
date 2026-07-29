@@ -11,6 +11,14 @@ const routes: Routes = [
         redirectTo: 'sign-in',
       },
       {
+        path: 'sign-in',
+        loadComponent: () => import('./features/sign-in/sign-in'),
+      },
+      {
+        path: 'sign-up',
+        loadComponent: () => import('./features/sign-up/sign-up'),
+      },
+      {
         path: 'forgot-password',
         loadComponent: () =>
           import('./features/forgot-password/forgot-password'),
@@ -20,12 +28,8 @@ const routes: Routes = [
         loadComponent: () => import('./features/reset-password/reset-password'),
       },
       {
-        path: 'sign-in',
-        loadComponent: () => import('./features/sign-in/sign-in'),
-      },
-      {
-        path: 'sign-up',
-        loadComponent: () => import('./features/sign-up/sign-up'),
+        path: 'new-password/:id',
+        loadComponent: () => import('./features/reset-password/reset-password'),
       },
     ],
   },

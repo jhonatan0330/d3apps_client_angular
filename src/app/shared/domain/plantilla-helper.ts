@@ -1,0 +1,340 @@
+import {
+  PedidoVentaCaracteristicaDTO,
+  PedidoVentaDTO,
+} from '@/app/domains/admin/modules/neuron/domain/sw42.domain';
+import { PropiedadDTO } from '@/app/shared/domain/shared.domain';
+
+export class PlantillaHelper {
+  /*******************GENERALES***************/
+  static FORM_TERCERO = 'TERCERO';
+  static FORM_ENCABEZADO = 'ENCABEZADO';
+  static FORM_DESCRIPCION = 'DESCRIPCION';
+  static FORM_DESCRIPCION_NIVEL2 = 'DESCRIPCION_NIVEL2';
+  static FORM_SUBTOTAL = 'SUBTOTAL';
+  static FORM_TOTAL = 'TOTAL';
+  static FORM_FUNCION_CALCULA_TOTAL = 'TOTAL_FUNCION';
+  static FORM_CONSECUTIVO = 'CONSECUTIVO';
+  static FORM_FECHA = 'FECHA';
+  static FORM_RESPONSABLE = 'RESPONSABLE';
+  static FORM_ORDEN = 'ORDEN';
+  static FORM_AYUDA = 'AYUDA';
+  static FORM_SOLICITAR_FECHAS = 'SOLICITAR_FECHAS';
+  static FORM_ANULAR = 'PLANTILLA_ANULAR';
+  static FORM_ACTIVATE = 'PLANTILLA_ACTIVAR';
+  static COPY_TEXT = 'COPY_TEXT';
+  static FORMATO = 'FORMATO';
+  static PERMISO_PLANTILLA_CREAR = 'PERMISO_PLANTILLA_CREAR';
+  static PERMISO_PLANTILLA_MODIFICAR = 'PERMISO_PLANTILLA_MODIFICAR';
+  static PERMISO_PLANTILLA_INICIO_RAPIDO = 'PERMISO_PLANTILLA_INICIO_RAPIDO';
+  static PERMISO_PLANTILLA_CARGA_MASIVA = 'PERMISO_PLANTILLA_CARGA_MASIVA';
+  static PLANTILLA_CARGA_MASIVA_MULTIPLE = 'PLANTILLA_CARGA_MASIVA_MULTIPLE';
+  static PLANTILLA_TIPO_CONFIGURATION = 'PLANTILLA_TIPO_CONFIGURATION';
+  static PERMISO_PLANTILLA_CAMBIAR_ESTADO = 'PERMISO_PLANTILLA_CAMBIAR_ESTADO';
+  static PERMISO_PLANTILLA_TRANSFERIR = 'PERMISO_PLANTILLA_TRANSFERIR';
+  static PERMISO_PLANTILLA_LISTAR_MENU = 'PERMISO_PLANTILLA_LISTAR_MENU';
+  static PLANTILLA_OCULTAR_GUARDAR = 'PLANTILLA_OCULTAR_GUARDAR';
+  static PLANTILLA_INSTRUCCION_CREAR = 'PLANTILLA_INSTRUCCION_CREAR';
+  static PLANTILLA_HISTORIAL_ACTIVO = 'PLANTILLA_HISTORIAL_ACTIVO';
+  static PLANTILLA_INICIA_PROCESO = 'PLANTILLA_INICIA_PROCESO';
+  static HTML_DOCUMENT_SQL = 'HTML_DOCUMENT_SQL';
+
+  static ROL = 'ROL';
+  static FUNCION_VALIDAR = 'FUNCION_VALIDAR';
+  static MODIFICABLE = 'MODIFICABLE';
+  static COLOR = 'COLOR';
+  static APP_DFA = 'APP_DFA';
+
+  static PERMISO_CAMPO_BLOQUEAR = 'PERMISO_CAMPO_BLOQUEAR';
+  static PERMISO_CAMPO_MODIFICABLE = 'PERMISO_CAMPO_MODIFICABLE';
+  static PERMISO_CAMPO_OPCIONAL = 'PERMISO_CAMPO_OPCIONAL';
+  static PERMISO_CAMPO_RENDER = 'PERMISO_CAMPO_RENDER';
+
+  static PRODUCTO_CAMPO_VALOR_MINIMO = 'PRODUCTO_CAMPO_VALOR_MINIMO';
+  static PRODUCTO_CAMPO_VALOR_UNITARIO = 'PRODUCTO_CAMPO_VALOR_UNITARIO';
+  static PRODUCTO_CAMPO_CANTIDAD = 'PRODUCTO_CAMPO_CANTIDAD';
+  static PRODUCTO_CAMPO_TOTAL = 'PRODUCTO_CAMPO_TOTAL';
+  static BUSQUEDA_SIN_TEXTO = 'BUSQUEDA_SIN_TEXTO';
+
+  static PLANTILLA_TIPO_PRODUCTO = 'PLANTILLA_TIPO_PRODUCTO';
+  static PLANTILLA_TIPO_REPORTE = 'PLANTILLA_TIPO_REPORTE';
+  static PLANTILLA_TIPO_ROL = 'PLANTILLA_TIPO_ROL';
+  static REPORT_MODULE_REFERENCE = 'REPORT_MODULE_REFERENCE';
+  static PLANTILLA_SUCCESS_INFORMATION = 'PLANTILLA_SUCCESS_INFORMATION';
+
+  static CONTACT_CHAT = 'CONTACT_CHAT';
+
+  /*******************CAMPOS***************/
+  static DEFAULT = 'DEFAULT';
+  static TEXTO_LARGO = 'BASICA';
+  static TEXTO_FORMULA = 'TEXTO_FORMULA';
+  static DEPENDE = 'DEPENDE';
+  static PLANTILLA_AUXILIAR = 'PLANTILLA_AUXILIAR';
+  static CAMPO_HEREDADO = 'CAMPO_HEREDADO';
+  static ALERTAR_CAMPO_PROCESO = 'ALERTAR_CAMPO_PROCESO';
+  static MULTIPLE = 'MULTIPLE';
+  static INVISIBLE = 'INVISIBLE';
+  static VISIBLE_VALOR_DEPENDIENTE = 'VISIBLE_VALOR_DEPENDIENTE';
+  static AUTOLOAD = 'AUTOLOAD';
+  static READ_QR = 'READ_QR';
+  static LINK_EXTERNO = 'LINK_EXTERNO';
+  static SAVE_TO_SELECT = 'SAVE_TO_SELECT';
+
+  static INFORMATIVE_DATA = 'INFORMATIVE_DATA';
+  static UPDATE_INFORMATIVE_FIELD = 'UPDATE_INFORMATIVE_FIELD';
+
+  static ARCHIVO_TIPO = 'ARCHIVO_TIPO';
+  static ARCHIVO_TAMANO_MAXIMO = 'ARCHIVO_TAMANO_MAXIMO';
+  static PORCENTAJE_CALIDAD = 'PORCENTAJE_CALIDAD';
+  static MULTIPLE_FILE = 'MULTIPLE_FILE';
+  static ARCHIVO_URL_USUARIO = 'ARCHIVO_URL_USUARIO';
+  static VALIDATE_ORIENTATION = 'VALIDATE_ORIENTATION';
+  static ARCHIVO_FIRMA = 'ARCHIVO_FIRMA';
+
+  static PROCESO_FUNCION_SQL = 'PROCESO_FUNCION_SQL';
+  static FUNCION_SQL_NEW_ANTES = 'FUNCION_SQL_NEW_ANTES';
+
+  static FORCE_NOTIFICATION = 'FORCE_NOTIFICATION';
+  static FECHA_CON_HORA = 'FECHA_CON_HORA';
+  static FECHA_SIN_CALENDAR = 'FECHA_SIN_CALENDAR';
+  static FECHA_RANGO = 'FECHA_RANGO';
+  static FECHA_TIMER_BACK = 'FECHA_TIMER_BACK';
+  static FECHA_FUNCION = 'FECHA_FUNCION_SQL';
+
+  static BINARIO_VERDADERO = 'BINARIO_VERDADERO';
+  static BINARIO_FALSO = 'BINARIO_FALSO';
+  static BINARIO_PREGUNTA = 'BINARIO_PREGUNTA';
+
+  static NUMERO_FORMULA = 'NUMERO_FORMULA';
+  static NUMERO_MAXIMO = 'NUMERO_MAXIMO';
+  static NUMERO_MINIMO = 'NUMERO_MINIMO';
+  static NUMERO_FUNCION = 'NUMERO_FUNCION_SQL';
+  static NUMERO_REDONDEO = 'NUMERO_REDONDEO';
+  static NUMERO_STEP = 'NUMERO_STEP';
+  static UNICO_PRODUCTO = 'UNICO_PRODUCTO';
+  static DETALLE_TARIFA_PRODUCTO = 'DETALLE_TARIFA_PRODUCTO';
+  static DETALLE_OCULTAR_UNIDADES_NOMBRE_CANTIDAD =
+    'DETALLE_OCULTAR_UNIDADES_NOMBRE_CANTIDAD';
+  static DETALLE_TARIFARIO_SQL = 'DETALLE_TARIFARIO_SQL';
+  static ITEM_DETAIL_FORM_VISIBLE = 'ITEM_DETAIL_FORM_VISIBLE';
+  static CONFIGURACION_OPCIONES = 'CONFIGURACION_OPCIONES';
+
+  static PROCESO_POP = 'PROCESO_POP';
+  static PROCESO_ACCIONES = 'PROCESO_ACCIONES';
+  static PROCESO_VALOR = 'PROCESO_VALOR';
+  static BODEGA_MOVIMIENTO = 'BODEGA_MOVIMIENTO';
+
+  static MULTIPLE_SELECCION = 'MULTIPLE_SELECCION';
+  static REP_VISIBLE_STATE = 'REP_VISIBLE_STATE';
+  static REP_AUTOPRINT = 'REP_AUTOPRINT';
+
+  static COVERAGE_IMAGE = 'COVERAGE_IMAGE';
+  static COVERAGE_TEMPLATE = 'COVERAGE_TEMPLATE';
+  static LAYOUT_APP = 'LAYOUT_APP';
+  static LANDING_PAGE = 'LANDING_PAGE';
+  static HEADER_PAGE = 'HEADER_PAGE';
+  static PUBLIC_USER = 'PUBLIC_USER';
+  static PLANTILLA_ACCESO_RAPIDO = 'PLANTILLA_ACCESO_RAPIDO';
+  static PLANTILLA_NUEVO_USUARIO = 'PLANTILLA_NUEVO_USUARIO';
+  static LOGIN_HTML = 'LOGIN_HTML';
+  static APP_ADMIN = 'APP_ADMIN';
+  static APP_READER = 'APP_READER';
+  static APP_MODULES = 'APP_MODULES';
+
+  static MODIFICAR_CAMPO = 'MODIFICAR_CAMPO';
+  static RELACIONAR_DOCUMENTOS = 'RELACIONAR_DOCUMENTOS';
+  static RETIRAR_DOCUMENTOS = 'RETIRAR_DOCUMENTOS';
+  static FECHA_MAXIMA_CAMPO = 'FECHA_MAXIMA_CAMPO';
+  static FECHA_MINIMA_CAMPO = 'FECHA_MINIMA_CAMPO';
+  static FECHA_MINIMA = 'FECHA_MINIMA';
+  static FECHA_MAXIMA = 'FECHA_MAXIMA';
+
+  static TEMPLATE_VOUCHER = 'TEMPLATE_VOUCHER';
+
+  static SECCION_FUNCION = 'SECCION_FUNCION_SQL';
+
+  static VINCULO_DATA = 'VINCULO_DATA';
+  static TRANSICION_VISIBLE_VINCULO = 'TRANSICION_VISIBLE_VINCULO';
+
+  static DEPENDENT_PROPERTIES = [
+    PlantillaHelper.DEPENDE,
+    PlantillaHelper.MODIFICAR_CAMPO,
+    PlantillaHelper.INFORMATIVE_DATA,
+    PlantillaHelper.UPDATE_INFORMATIVE_FIELD,
+    PlantillaHelper.FECHA_MAXIMA_CAMPO,
+    PlantillaHelper.FECHA_MINIMA_CAMPO,
+  ];
+
+  static buscarPropiedad(
+    propiedades: PropiedadDTO[],
+    key: string,
+  ): PropiedadDTO | null {
+    if (propiedades) {
+      return propiedades.find((property: PropiedadDTO) => property.key === key) ?? null;
+    }
+    return null;
+  }
+
+  static buscarValor(propiedades: PropiedadDTO[], key: string): string {
+    const p = PlantillaHelper.buscarPropiedad(propiedades, key);
+    return p ? p.valor : '';
+  }
+
+  static buscarValorMultipleFromManyKeys(
+    propiedades: PropiedadDTO[],
+    keys: string[],
+  ): PropiedadDTO[] | null {
+    if (!propiedades || propiedades.length === 0) {
+      return null;
+    }
+    if (!keys || keys.length === 0) {
+      return null;
+    }
+    const result: PropiedadDTO[] = [];
+    keys.forEach((key) => {
+      propiedades.forEach((element) => {
+        if (element.key === key) {
+          result.push(element);
+        }
+      });
+    });
+    return result.length === 0 ? null : result;
+  }
+
+  static buscarValorMultiple(
+    propiedades: PropiedadDTO[],
+    key: string,
+  ): PropiedadDTO[] | null {
+    if (key == null) {
+      return null;
+    }
+    return this.buscarValorMultipleFromManyKeys(propiedades, [key]);
+  }
+
+  static agregarPropiedad(
+    propiedades: PropiedadDTO[],
+    key: string,
+    value: string,
+  ): PropiedadDTO[] {
+    if (propiedades == null) {
+      propiedades = [];
+    }
+    const newParam = new PropiedadDTO();
+    newParam.key = key;
+    newParam.valor = value;
+    propiedades.push(newParam);
+    return propiedades;
+  }
+
+  static isEmpty(propiedades: PropiedadDTO[], key: string): boolean {
+    return !this.buscarPropiedad(propiedades, key);
+  }
+}
+
+export class MVCTranslate {
+  static calculateText(text: string): string {
+    let posOperator = -1;
+    let leftOperator = 0;
+    let righOperator = 0;
+
+    posOperator = text.indexOf('-', 1);
+    if (posOperator !== -1) {
+      leftOperator = Number(text.substring(0, posOperator));
+      righOperator = Number(text.substring(posOperator + 1, text.length));
+      text = String(leftOperator - righOperator);
+    } else {
+      posOperator = text.indexOf('+');
+      if (posOperator !== -1) {
+        leftOperator = Number(text.substring(0, posOperator));
+        righOperator = Number(text.substring(posOperator + 1, text.length));
+        text = String(leftOperator + righOperator);
+      } else {
+        posOperator = text.indexOf('*');
+        if (posOperator !== -1) {
+          leftOperator = Number(text.substring(0, posOperator));
+          righOperator = Number(text.substring(posOperator + 1, text.length));
+          text = (leftOperator * righOperator).toFixed(8);
+        } else {
+          posOperator = text.indexOf('/');
+          if (posOperator !== -1) {
+            leftOperator = Number(text.substring(0, posOperator));
+            righOperator = Number(text.substring(posOperator + 1, text.length));
+            if (righOperator === 0) {
+              text = '0';
+            } else {
+              text = (leftOperator / righOperator).toFixed(8);
+            }
+          } else {
+            posOperator = text.indexOf('%');
+            if (posOperator !== -1) {
+              leftOperator = Number(text.substring(0, posOperator));
+              righOperator = Number(text.substring(posOperator + 1, text.length));
+              text = (leftOperator % righOperator).toPrecision(10);
+            } else {
+              posOperator = text.indexOf('<');
+              if (posOperator !== -1) {
+                leftOperator = Number(text.substring(0, posOperator));
+                righOperator = Number(text.substring(posOperator + 1, text.length));
+                text = leftOperator < righOperator ? '1' : '-1';
+              } else {
+                posOperator = text.indexOf('>');
+                if (posOperator !== -1) {
+                  leftOperator = Number(text.substring(0, posOperator));
+                  righOperator = Number(text.substring(posOperator + 1, text.length));
+                  text = leftOperator > righOperator ? '1' : '-1';
+                } else {
+                  text = String(text);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    if (!text) {
+      return '0';
+    }
+    return text;
+  }
+}
+
+export class FieldHelper {
+  static getValueDate(document: PedidoVentaDTO, code: string): Date | null {
+    const field = FieldHelper.getField(document, code);
+    if (field == null) return null;
+    return field.valorFecha;
+  }
+
+  static getValueText(document: PedidoVentaDTO, code: string): string | null {
+    const field = FieldHelper.getField(document, code);
+    if (field == null) return null;
+    return field.valorText;
+  }
+
+  static getValueOption(document: PedidoVentaDTO, code: string): string | null {
+    const field = FieldHelper.getField(document, code);
+    if (field == null) return null;
+    return field.valorOpcion;
+  }
+
+  static getValueBool(document: PedidoVentaDTO, code: string): boolean | null {
+    const field = FieldHelper.getField(document, code);
+    if (field == null) return null;
+    if (!field.valorNumero) return false;
+    return field.valorNumero === 1;
+  }
+
+  static getField(
+    document: PedidoVentaDTO,
+    code: string,
+  ): PedidoVentaCaracteristicaDTO | null {
+    if (document == null) return null;
+    if (!document.caracteristicas || document.caracteristicas.length === 0)
+      return null;
+
+    for (let i = 0; i < document.caracteristicas.length; i++) {
+      const iField = document.caracteristicas[i];
+      if (iField.campoDTO && iField.campoDTO.codigo === code) return iField;
+    }
+    return null;
+  }
+}
