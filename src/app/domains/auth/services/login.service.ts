@@ -2,10 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, of, throwError, catchError, switchMap } from 'rxjs';
-import {
-  PedidoVentaFilterDTO,
-} from '@/app/domains/admin/modules/neuron/domain/sw42.domain';
+import { Observable, of, throwError, catchError, map } from 'rxjs';
 import { ApiService } from '@/app/domains/admin/modules/neuron/services/api.service';
 import { TemplateService } from '@/app/domains/admin/modules/neuron/services/template.service';
 import {
@@ -16,11 +13,10 @@ import {
   UsuarioDTO,
   UsuarioOrganizacionDTO,
 } from '@/app/domains/auth/domain/auth.domain';
-import { PlantillaHelper } from '@/app/shared/domain/plantilla-helper';
-import { LocalConstants, LocalStoreService } from '@/app/shared/services/local-store.service';
+import { LocalStoreService } from '@/app/shared/services/local-store.service';
 import { NotificationsService } from '@/app/shared/services/notifications.service';
-import { TokenService } from './token.service';
 import { OrganizationService } from './organization.service';
+import { TokenService } from './token.service';
 import { environment } from '@/environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -138,12 +134,10 @@ export class LoginService {
   checkTokenIsValid(): Observable<boolean> {
     const tokenLocal = this.tokenService.getJwtToken();
     if (!tokenLocal) return of(false);
-    if (this.tokenService.isTokenExpired(tokenLocal as string)) {
-      this.signout();
-      return of(false);
+    if (!this.urlService) {
+      this.urlService = this.orgService.getConfUrl() as string | null;
     }
-    const url = this.orgService.getConfUrl() as string | null;
-    if (!url) return of(false);
+    if (!this.urlService) return of(false);
     if (this._isAuthenticated) return of(true);
 
     const autenticacion = new UsuarioAutenticacionFilterDTO();
@@ -156,14 +150,13 @@ export class LoginService {
         autenticacion,
       )
       .pipe(
-        switchMap((profile: UsuarioAutenticacionDTO) => {
-          if (!profile) return of(false);
-          return this.signin(null, null, tokenLocal as string).pipe(
-            switchMap((data: UsuarioAutenticacionDTO | null) => {
+        map((profile: UsuarioAutenticacionDTO) => {
+          this.signin(null, null, tokenLocal as string).subscribe({
+            next: (data) => {
               if (data) this.authenticationOK(data);
-              return of(!!data);
-            }),
-          );
+            },
+          });
+          return !!profile;
         }),
         catchError(() => {
           if (!this._isAuthenticated) {

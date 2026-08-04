@@ -28,12 +28,7 @@
               }
             ],
             "styles": ["src/styles/styles.css"],
-            "serviceWorker": "ngsw-config.json",
-            "server": "src/main.server.ts",
-            "outputMode": "server",
-            "ssr": {
-              "entry": "src/server.ts"
-            }
+            "serviceWorker": "ngsw-config.json"
           },
           "configurations": {
             "production": {
@@ -65,6 +60,9 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          },
           "configurations": {
             "production": {
               "buildTarget": "d3apps:build:production"

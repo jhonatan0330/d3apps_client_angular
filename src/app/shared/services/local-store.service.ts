@@ -1,5 +1,4 @@
-import { Injectable, PLATFORM_ID, inject } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { Injectable } from '@angular/core';
 
 export const LocalConstants = {
   JWT_TOKEN: 'JWT_TOKEN',
@@ -12,13 +11,8 @@ export const LocalConstants = {
 
 @Injectable({ providedIn: 'root' })
 export class LocalStoreService {
-  private readonly platformId = inject(PLATFORM_ID);
-
-  private get ls(): Storage | null {
-    if (isPlatformBrowser(this.platformId)) {
-      return window.localStorage;
-    }
-    return null;
+  private get ls(): Storage {
+    return window.localStorage;
   }
 
   setItem(key: string, value: unknown): boolean {

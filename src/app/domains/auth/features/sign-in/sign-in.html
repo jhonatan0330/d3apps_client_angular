@@ -3,61 +3,37 @@
     class="flex flex-auto items-center justify-center bg-white p-4 sm:p-12 dark:bg-neutral-950"
   >
     <div class="flex w-full max-w-80 flex-col sm:min-w-80">
-      <!-- Logo -->
-      <img
-        class="w-12"
-        src="/images/logo/logo.svg"
-        alt="logo"
-      />
+      <img class="w-12" src="/images/logo/logo.svg" alt="logo" />
 
-      <!-- Title -->
       <div class="leading-tight mt-8 text-4xl font-extrabold tracking-tight">
         Iniciar sesion
       </div>
       <div class="mt-0.5 flex items-baseline font-medium">
         <div class="text-neutral-500">No tienes cuenta?</div>
-        <a
-          class="ml-1 underline"
-          routerLink="/auth/sign-up"
-        >
-          Registrate
-        </a>
+        <a class="ml-1 underline" routerLink="/auth/sign-up">Registrate</a>
       </div>
 
-      <!-- Loading bar -->
       @if (isLoading()) {
-        <mat-progress-bar
-          class="mt-4"
-          mode="indeterminate"
-        />
+        <mat-progress-bar class="mt-4" mode="indeterminate" />
       }
 
-      <!-- Error message -->
       @if (errorMessage()) {
         <div class="mt-4 rounded-lg bg-red-100 p-3 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-400">
           {{ errorMessage() }}
         </div>
       }
 
-      <!-- Sign in form -->
-      <form
-        class="mt-8"
-        (submit)="signIn($event)"
-      >
+      <form class="mt-8" (submit)="signIn($event)">
         <div class="flex flex-col gap-y-4">
-          <!-- Username field -->
           <mat-form-field class="w-full">
             <mat-label>Usuario</mat-label>
             <input
               id="email"
               matInput
-              autocomplete="username"
               [formField]="signInForm.email"
             />
             <mat-error>
-              @if (
-                signInForm.email().touched() && signInForm.email().invalid()
-              ) {
+              @if (signInForm.email().touched() && signInForm.email().invalid()) {
                 @for (error of signInForm.email().errors(); track error) {
                   {{ error.message }}
                 }
@@ -65,17 +41,12 @@
             </mat-error>
           </mat-form-field>
 
-          <!-- Password field -->
-          <mat-form-field
-            appearance="fill"
-            class="w-full"
-          >
+          <mat-form-field appearance="fill" class="w-full">
             <mat-label>Contrasena</mat-label>
             <input
               id="password"
               matInput
               type="password"
-              autocomplete="current-password"
               [formField]="signInForm.password"
               #passwordField
             />
@@ -90,22 +61,15 @@
               matSuffix
             >
               @if (passwordField.type === 'password') {
-                <mat-icon
-                  class="size-5"
-                  svgIcon="eye"
-                ></mat-icon>
+                <mat-icon class="size-5" svgIcon="eye"></mat-icon>
               }
               @if (passwordField.type === 'text') {
-                <mat-icon
-                  class="size-5"
-                  svgIcon="eye-off"
-                ></mat-icon>
+                <mat-icon class="size-5" svgIcon="eye-off"></mat-icon>
               }
             </button>
             <mat-error>
               @if (
-                signInForm.password().touched() &&
-                signInForm.password().invalid()
+                signInForm.password().touched() && signInForm.password().invalid()
               ) {
                 @for (error of signInForm.password().errors(); track error) {
                   {{ error.message }}
@@ -115,18 +79,13 @@
           </mat-form-field>
         </div>
 
-        <!-- Actions -->
         <div class="mt-2 flex w-full items-center justify-between">
           <mat-checkbox class="-ml-2">Recordarme</mat-checkbox>
-          <a
-            class="font-medium underline"
-            routerLink="/auth/forgot-password"
-          >
+          <a class="font-medium underline" routerLink="/auth/forgot-password">
             Olvidaste tu contrasena?
           </a>
         </div>
 
-        <!-- Submit button -->
         <button
           type="submit"
           matButton="filled"
@@ -150,22 +109,9 @@
       preserveAspectRatio="xMidYMax slice"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <g
-        class="text-neutral-700/25"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="100"
-      >
-        <circle
-          r="234"
-          cx="196"
-          cy="23"
-        ></circle>
-        <circle
-          r="234"
-          cx="790"
-          cy="491"
-        ></circle>
+      <g class="text-neutral-700/25" fill="none" stroke="currentColor" stroke-width="100">
+        <circle r="234" cx="196" cy="23"></circle>
+        <circle r="234" cx="790" cy="491"></circle>
       </g>
     </svg>
 

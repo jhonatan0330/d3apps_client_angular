@@ -1,15 +1,8 @@
-import { Injectable, inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { Injectable } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class CopierService {
-  private readonly platformId = inject(PLATFORM_ID);
-
   async copyText(text: string): Promise<boolean> {
-    if (!isPlatformBrowser(this.platformId)) {
-      return false;
-    }
-
     if (navigator.clipboard && navigator.clipboard.writeText) {
       try {
         await navigator.clipboard.writeText(text);

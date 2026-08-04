@@ -13,10 +13,6 @@ import {
 import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import {
-  provideClientHydration,
-  withIncrementalHydration,
-} from '@angular/platform-browser';
-import {
   provideRouter,
   withComponentInputBinding,
   withInMemoryScrolling,
@@ -26,9 +22,9 @@ import { provideTransloco } from '@jsverse/transloco';
 import { provideIcons } from '@/app/core/icons/provider';
 import { provideTheming } from '@/app/core/theming';
 import { TranslocoHttpLoader } from '@/app/core/transloco/transloco-http-loader';
+import { dateConversionInterceptor } from '@/app/shared/interceptors/date-conversion.interceptor';
 import { errorInterceptor } from '@/app/shared/interceptors/error.interceptor';
 import { tokenInterceptor } from '@/app/shared/interceptors/token.interceptor';
-import { dateConversionInterceptor } from '@/app/shared/interceptors/date-conversion.interceptor';
 import { ErrorHandlerService } from '@/app/shared/services/error-handler.service';
 import { initializeApp } from './app.initializer';
 import { routes } from './app.routes';
@@ -45,7 +41,6 @@ export const appConfig: ApplicationConfig = {
       withFetch(),
       withInterceptors([tokenInterceptor, dateConversionInterceptor, errorInterceptor]),
     ),
-    provideClientHydration(withIncrementalHydration()),
     provideRouter(
       routes,
       withComponentInputBinding(),

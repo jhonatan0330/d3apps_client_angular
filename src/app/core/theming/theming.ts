@@ -1,10 +1,9 @@
-import { DOCUMENT, isPlatformServer } from '@angular/common';
+import { DOCUMENT } from '@angular/common';
 import {
   computed,
   effect,
   inject,
   Injectable,
-  PLATFORM_ID,
   signal,
 } from '@angular/core';
 import { LocalStorage } from '@/app/core/local-storage/local-storage';
@@ -17,7 +16,6 @@ import { THEME_CONFIG } from './provider';
 export class Theming {
   // Dependencies
   private document = inject(DOCUMENT);
-  private isServer = isPlatformServer(inject(PLATFORM_ID));
   private localStorage = inject(LocalStorage);
   private media = inject(Media);
   private themeConfig = inject(THEME_CONFIG);
@@ -52,12 +50,6 @@ export class Theming {
 
     // Update scheme
     effect(() => {
-      // Skip the server. Otherwise, the scheme will always be 'system' and
-      // the class will always be 'scheme-dark'.
-      if (this.isServer) {
-        return;
-      }
-
       const scheme = this.scheme();
       const prefersDarkMode = this.prefersDarkMode();
 

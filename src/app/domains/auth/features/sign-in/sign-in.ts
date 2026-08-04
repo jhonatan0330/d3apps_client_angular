@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import {
   email,
   form,
@@ -8,7 +8,6 @@ import {
 } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -30,7 +29,7 @@ import { LoginService } from '@/app/domains/auth/services/login.service';
     FormField,
   ],
 })
-export default class AuthSignIn implements OnInit {
+export default class AuthSignIn {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly loginService = inject(LoginService);
@@ -42,31 +41,31 @@ export default class AuthSignIn implements OnInit {
     email: '',
     password: '',
   });
-
-  protected signInForm = form(this.signInFormModel, (form) => {
-    required(form.email, { message: 'Debe ingresar un usuario' });
-    required(form.password, { message: 'Debe ingresar una contrasena' });
+  protected signInForm = form(this.signInFormModel, (f) => {
+    required(f.email, { message: 'Debe ingresar un correo electronico' });
+    email(f.email, { message: 'Debe ingresar un correo electronico valido' });
+    required(f.password, { message: 'Debe ingresar una contrasena' });
   });
 
   ngOnInit(): void {
     this.loginService.getUrlServices();
   }
 
-  signIn(event: Event): void {
+  signIn(event: Event) {
     event.preventDefault();
 
     submit(this.signInForm, async () => {
+      const { email, password } = this.signInFormModel();
       this.isLoading.set(true);
       this.errorMessage.set('');
 
-      const { email: username, password } = this.signInFormModel();
-
-      this.loginService.signin(username, password, null).subscribe({
+      this.loginService.signin(email, password, null).subscribe({
         next: (result) => {
           if (result) {
             this.loginService.authenticationOK(result);
             const redirectURL =
-              this.route.snapshot.queryParamMap.get('redirectURL') || '/admin/main';
+              this.route.snapshot.queryParamMap.get('redirectURL') ||
+              '/admin/main';
             this.router.navigateByUrl(redirectURL);
           }
           this.isLoading.set(false);

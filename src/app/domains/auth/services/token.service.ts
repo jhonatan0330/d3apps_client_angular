@@ -1,7 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { LocalConstants, LocalStoreService } from '@/app/shared/services/local-store.service';
 import { UsuarioDTO } from '@/app/domains/auth/domain/auth.domain';
-import { environment } from '@/environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class TokenService {

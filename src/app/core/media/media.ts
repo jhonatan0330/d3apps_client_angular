@@ -1,10 +1,8 @@
 import { MediaMatcher } from '@angular/cdk/layout';
-import { isPlatformBrowser } from '@angular/common';
 import {
   DestroyRef,
   inject,
   Injectable,
-  PLATFORM_ID,
   signal,
   Signal,
   WritableSignal,
@@ -19,7 +17,6 @@ type MediaQueryObserver = {
 export class Media {
   // Dependencies
   private destroyRef = inject(DestroyRef);
-  private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private mediaMatcher = inject(MediaMatcher);
 
   // State
@@ -46,12 +43,10 @@ export class Media {
     };
 
     // Add listener and destroy handler
-    if (this.isBrowser) {
-      mql.addEventListener('change', handler);
-      this.destroyRef.onDestroy(() => {
-        mql.removeEventListener('change', handler);
-      });
-    }
+    mql.addEventListener('change', handler);
+    this.destroyRef.onDestroy(() => {
+      mql.removeEventListener('change', handler);
+    });
 
     // Store the observer
     this.matchers.set(query, {

@@ -1,0 +1,22 @@
+{
+  "/main": {
+    "target": "https://fiel.d3-apps.com",
+    "secure": true,
+    "changeOrigin": true
+  },
+  "/rest": {
+    "target": "https://fiel.d3-apps.com",
+    "secure": true,
+    "changeOrigin": true
+  },
+  "/conf.xml": {
+    "target": "https://fiel.d3-apps.com",
+    "secure": true,
+    "changeOrigin": true
+  },
+  "/reporte": {
+    "target": "https://fiel.d3-apps.com",
+    "secure": true,
+    "changeOrigin": true
+  }
+}
