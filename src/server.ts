@@ -1,4 +1,5 @@
 import { join } from 'node:path';
+import { randomBytes } from 'node:crypto';
 import {
   AngularNodeAppEngine,
   createNodeRequestHandler,
@@ -15,16 +16,61 @@ const angularApp = new AngularNodeAppEngine({
 });
 
 /**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/{*splat}', (req, res) => {
- *   // Handle API request
- * });
- * ```
+ * CSP headers middleware
  */
+app.use((_req, res, next) => {
+  res.setHeader(
+    'Content-Security-Policy',
+    [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline'",
+      "style-src 'self' 'unsafe-inline'",
+      "font-src 'self'",
+      "img-src 'self' data: blob:",
+      "connect-src 'self' https://*.d3apps.com https://*.d3-apps.com http://localhost:*",
+      "frame-ancestors 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+    ].join('; '),
+  );
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  next();
+});
+
+/**
+ * CSRF token middleware for state-changing requests
+ */
+const CSRF_SECRET = randomBytes(32).toString('hex');
+
+function generateCsrfToken(sessionId: string): string {
+  const { createHmac } = require('node:crypto') as typeof import('node:crypto');
+  return createHmac('sha256', CSRF_SECRET).update(sessionId).digest('hex');
+}
+
+app.use(express.json());
+app.use((req, res, next) => {
+  if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS') {
+    return next();
+  }
+
+  const token = req.headers['x-csrf-token'] as string | undefined;
+  const sessionId = req.headers['x-session-id'] as string | undefined;
+
+  if (!token || !sessionId) {
+    return res.status(403).json({ error: 'CSRF token missing' });
+  }
+
+  const expected = generateCsrfToken(sessionId);
+  if (token !== expected) {
+    return res.status(403).json({ error: 'Invalid CSRF token' });
+  }
+
+  next();
+});
 
 /**
  * Serve static files from /browser

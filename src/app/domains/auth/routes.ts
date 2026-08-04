@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { redirectIfAuthenticated } from '@/app/shared/guards/redirect-if-authenticated.guard';
 
 const routes: Routes = [
   {
@@ -13,10 +14,12 @@ const routes: Routes = [
       {
         path: 'sign-in',
         loadComponent: () => import('./features/sign-in/sign-in'),
+        canActivate: [redirectIfAuthenticated],
       },
       {
         path: 'sign-up',
         loadComponent: () => import('./features/sign-up/sign-up'),
+        canActivate: [redirectIfAuthenticated],
       },
       {
         path: 'forgot-password',

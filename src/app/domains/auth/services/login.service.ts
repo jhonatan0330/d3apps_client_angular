@@ -1,13 +1,13 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Injectable, inject, signal, computed } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { Observable, of, throwError, catchError, map } from 'rxjs';
-import { LocalConstants, LocalStoreService } from '@/app/shared/services/local-store.service';
-import { TemplateService } from '@/app/domains/admin/modules/neuron/services/template.service';
-import { NotificationsService } from '@/app/shared/services/notifications.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Observable, of, throwError, catchError, switchMap } from 'rxjs';
+import {
+  PedidoVentaFilterDTO,
+} from '@/app/domains/admin/modules/neuron/domain/sw42.domain';
 import { ApiService } from '@/app/domains/admin/modules/neuron/services/api.service';
+import { TemplateService } from '@/app/domains/admin/modules/neuron/services/template.service';
 import {
   OrganizacionDTO,
   UsuarioAutenticacionAutorizacionDTO,
@@ -17,11 +17,10 @@ import {
   UsuarioOrganizacionDTO,
 } from '@/app/domains/auth/domain/auth.domain';
 import { PlantillaHelper } from '@/app/shared/domain/plantilla-helper';
-import {
-  PedidoVentaDTO,
-  PedidoVentaFilterDTO,
-} from '@/app/domains/admin/modules/neuron/domain/sw42.domain';
-import { PropiedadDTO } from '@/app/shared/domain/shared.domain';
+import { LocalConstants, LocalStoreService } from '@/app/shared/services/local-store.service';
+import { NotificationsService } from '@/app/shared/services/notifications.service';
+import { TokenService } from './token.service';
+import { OrganizationService } from './organization.service';
 import { environment } from '@/environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -30,33 +29,46 @@ export class LoginService {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
-  private readonly domSanitizer = inject(DomSanitizer);
   private readonly templateService = inject(TemplateService);
   private readonly notificationService = inject(NotificationsService);
   private readonly apiService = inject(ApiService);
   private readonly http = inject(HttpClient);
+  private readonly tokenService = inject(TokenService);
+  private readonly orgService = inject(OrganizationService);
 
-  // Signals
-  token: string | null = null;
-  urlService: string | null = null;
   private _isAuthenticated = false;
   returnPath: string | undefined;
 
-  readonly user = signal<UsuarioDTO | null>(null);
-  readonly company = signal<OrganizacionDTO | null>(null);
-  readonly isAdmin = signal(false);
-  readonly isReader = signal(false);
-  readonly slides = signal<string[]>([]);
-  readonly landing = signal<SafeHtml[]>([]);
-  readonly headerSection = signal<SafeHtml[]>([]);
+  readonly user = this.tokenService.user;
+  readonly company = this.orgService.company;
+  readonly isAdmin = this.orgService.isAdmin;
+  readonly isReader = this.orgService.isReader;
+  readonly slides = this.orgService.slides;
+  readonly landing = this.orgService.landing;
+  readonly headerSection = this.orgService.headerSection;
   readonly currentDate = signal<Date | null>(null);
 
-  // Computed
+  get token(): string | null {
+    return this.tokenService.token;
+  }
+
+  set token(value: string | null) {
+    this.tokenService.token = value;
+  }
+
+  get urlService(): string | null {
+    return this.orgService.getConfUrl() as string | null;
+  }
+
+  set urlService(value: string | null) {
+    if (value) this.orgService.setConfUrl(value);
+  }
+
   readonly isLoggedIn = computed(() => {
-    if (!this.token) this.token = this.getJwtToken() as string | null;
-    if (!this.token) return false;
-    if (!this.urlService) this.urlService = this.getConfUrl() as string | null;
-    return !!this.urlService;
+    if (!this.tokenService.token) this.tokenService.token = this.tokenService.getJwtToken() as string | null;
+    if (!this.tokenService.token) return false;
+    const url = this.orgService.getConfUrl() as string | null;
+    return !!url;
   });
 
   constructor() {
@@ -89,14 +101,14 @@ export class LoginService {
 
     if (username === null && password === null) {
       if (!tokenAuto) return of(null);
-      const _user = this.getUser();
+      const _user = this.tokenService.getUser();
       if (_user) autenticacion.usuario = (_user as UsuarioDTO).llaveTabla;
       autenticacion.securityToken = tokenAuto;
     }
 
     return this.http
       .post<UsuarioAutenticacionDTO>(
-        this.ls.getUrlAccess('/main/autenticarUsuarioAutenticacion'),
+        this.orgService.getUrlAccess('/main/autenticarUsuarioAutenticacion'),
         autenticacion,
       )
       .pipe(
@@ -109,8 +121,8 @@ export class LoginService {
 
   authenticationOK(res: UsuarioAutenticacionDTO): void {
     this._isAuthenticated = true;
-    this.setUserAndToken(res, res.organizacion);
-    this.setCompany(res.organizacion);
+    this.tokenService.setTokenAndUser(res.token, res.usuarioDTO);
+    this.orgService.setCompany(res.organizacion, true);
     this.getUserDataFull(res);
     if (res) {
       this.setDate(res.fechaMaxima);
@@ -119,112 +131,19 @@ export class LoginService {
     }
   }
 
-  private setCompany(_company: OrganizacionDTO | null): void {
-    if (_company) {
-      this.getCarrousel(_company);
-      if (_company.propiedades) {
-        this.isAdmin.set(
-          !PlantillaHelper.isEmpty(_company.propiedades, PlantillaHelper.APP_ADMIN),
-        );
-        this.isReader.set(
-          !PlantillaHelper.isEmpty(_company.propiedades, PlantillaHelper.APP_READER),
-        );
-        this.templateService.setModules(
-          PlantillaHelper.buscarValorMultiple(
-            _company.propiedades,
-            PlantillaHelper.APP_MODULES,
-          ),
-        );
-      }
-    }
-
-    const current = this.company();
-    if (current && current.llaveTabla === _company?.llaveTabla) {
-      if (_company) {
-        current.propiedades = _company.propiedades;
-        this.company.set({ ...current });
-      }
-      return;
-    }
-
-    this.company.set(_company);
-  }
-
-  private getCarrousel(_company: OrganizacionDTO): void {
-    const newSlides: string[] = [];
-    const newLanding: SafeHtml[] = [];
-    const newHeader: SafeHtml[] = [];
-
-    if (_company.propiedades) {
-      const backImages = PlantillaHelper.buscarValorMultiple(
-        _company.propiedades,
-        PlantillaHelper.COVERAGE_IMAGE,
-      );
-      if (backImages) {
-        backImages.forEach((element) => newSlides.push(element.valor));
-      }
-
-      if (
-        PlantillaHelper.buscarValor(
-          _company.propiedades,
-          PlantillaHelper.COVERAGE_TEMPLATE,
-        ) &&
-        this._isAuthenticated
-      ) {
-        const entity = new PedidoVentaFilterDTO();
-        entity.plantilla = PlantillaHelper.buscarValor(
-          _company.propiedades,
-          PlantillaHelper.COVERAGE_TEMPLATE,
-        );
-        this.apiService.listarDocumentos(entity, null).subscribe({
-          next: (dataResult) => {
-            if (dataResult) {
-              const updated = [...this.slides()];
-              dataResult.forEach((element) => updated.push(element.imagen));
-              this.slides.set(updated);
-            }
-          },
-          error: () => {},
-        });
-      }
-
-      const _iHeaders = PlantillaHelper.buscarValorMultiple(
-        _company.propiedades,
-        PlantillaHelper.LANDING_PAGE,
-      );
-      if (_iHeaders && _iHeaders.length !== 0) {
-        _iHeaders.forEach((element: PropiedadDTO) => {
-          newLanding.push(
-            this.domSanitizer.bypassSecurityTrustHtml(element.valor),
-          );
-        });
-      }
-
-      const _iFooters = PlantillaHelper.buscarValorMultiple(
-        _company.propiedades,
-        PlantillaHelper.HEADER_PAGE,
-      );
-      if (_iFooters && _iFooters.length !== 0) {
-        _iFooters.forEach((element: PropiedadDTO) => {
-          newHeader.push(
-            this.domSanitizer.bypassSecurityTrustHtml(element.valor),
-          );
-        });
-      }
-    }
-
-    this.slides.set(newSlides);
-    this.landing.set(newLanding);
-    this.headerSection.set(newHeader);
+  isTokenExpired(token: string): boolean {
+    return this.tokenService.isTokenExpired(token);
   }
 
   checkTokenIsValid(): Observable<boolean> {
-    const tokenLocal = this.getJwtToken();
+    const tokenLocal = this.tokenService.getJwtToken();
     if (!tokenLocal) return of(false);
-    if (!this.urlService) {
-      this.urlService = this.getConfUrl() as string | null;
+    if (this.tokenService.isTokenExpired(tokenLocal as string)) {
+      this.signout();
+      return of(false);
     }
-    if (!this.urlService) return of(false);
+    const url = this.orgService.getConfUrl() as string | null;
+    if (!url) return of(false);
     if (this._isAuthenticated) return of(true);
 
     const autenticacion = new UsuarioAutenticacionFilterDTO();
@@ -233,17 +152,18 @@ export class LoginService {
 
     return this.http
       .post<UsuarioAutenticacionDTO>(
-        this.ls.getUrlAccess('/main/checkToken'),
+        this.orgService.getUrlAccess('/main/checkToken'),
         autenticacion,
       )
       .pipe(
-        map((profile: UsuarioAutenticacionDTO) => {
-          this.signin(null, null, tokenLocal as string).subscribe({
-            next: (data) => {
+        switchMap((profile: UsuarioAutenticacionDTO) => {
+          if (!profile) return of(false);
+          return this.signin(null, null, tokenLocal as string).pipe(
+            switchMap((data: UsuarioAutenticacionDTO | null) => {
               if (data) this.authenticationOK(data);
-            },
-          });
-          return !!profile;
+              return of(!!data);
+            }),
+          );
         }),
         catchError(() => {
           if (!this._isAuthenticated) {
@@ -255,7 +175,7 @@ export class LoginService {
   }
 
   private getUserDataFull(response: UsuarioAutenticacionDTO): void {
-    this.token = response.token;
+    this.tokenService.token = response.token;
     this._isAuthenticated = true;
 
     if (response?.mensaje) {
@@ -272,7 +192,8 @@ export class LoginService {
   }
 
   signout(): void {
-    this.setUserAndToken(null, null);
+    this._isAuthenticated = false;
+    this.tokenService.clear();
     this.templateService.clear();
     this.notificationService.clear();
     this.router.navigate(['/auth/sign-in']);
@@ -286,7 +207,7 @@ export class LoginService {
     autenticacion.claveAnterior = oldPwd;
     autenticacion.clave = newPwd;
     return this.http.post<UsuarioAutenticacionDTO>(
-      this.ls.getUrlAccess('/main/cambiarClave'),
+      this.orgService.getUrlAccess('/main/cambiarClave'),
       autenticacion,
     );
   }
@@ -303,7 +224,7 @@ export class LoginService {
     autenticacion.claveAnterior = oldPwd;
     autenticacion.clave = newPwd;
     return this.http.post<UsuarioAutenticacionDTO>(
-      this.ls.getUrlAccess('/main/cambiarClave'),
+      this.orgService.getUrlAccess('/main/cambiarClave'),
       autenticacion,
     );
   }
@@ -312,7 +233,7 @@ export class LoginService {
     autenticacion: UsuarioOrganizacionDTO,
   ): Observable<UsuarioOrganizacionDTO> {
     return this.http.post<UsuarioOrganizacionDTO>(
-      this.ls.getUrlAccess('/main/cambiarClaveOtherSystem'),
+      this.orgService.getUrlAccess('/main/cambiarClaveOtherSystem'),
       autenticacion,
     );
   }
@@ -326,21 +247,21 @@ export class LoginService {
     autenticacion.usuarioDTO.identificacion = identificacion;
     autenticacion.usuarioDTO.correo = correo;
     return this.http.post<UsuarioAutenticacionAutorizacionDTO>(
-      this.ls.getUrlAccess('/main/solicitarNuevaClave'),
+      this.orgService.getUrlAccess('/main/solicitarNuevaClave'),
       autenticacion,
     );
   }
 
   getJwtToken(): unknown {
-    return this.ls.getItem(LocalConstants.JWT_TOKEN);
+    return this.tokenService.getJwtToken();
   }
 
   getConfUrl(): unknown {
-    return this.ls.getItem(LocalConstants.URL_CONF);
+    return this.orgService.getConfUrl();
   }
 
   getUser(): unknown {
-    return this.ls.getItem(LocalConstants.APP_USER);
+    return this.tokenService.getUser();
   }
 
   setUserAndToken(
@@ -349,30 +270,21 @@ export class LoginService {
   ): void {
     if (authDTO) {
       this._isAuthenticated = true;
-      this.token = authDTO.token;
-      this.user.set(authDTO.usuarioDTO);
+      this.tokenService.setTokenAndUser(authDTO.token, authDTO.usuarioDTO);
     } else {
       this._isAuthenticated = false;
-      this.token = null;
-      this.user.set(null);
+      this.tokenService.clear();
     }
 
-    this.ls.setItem(LocalConstants.JWT_TOKEN, this.token);
-    this.ls.setItem(LocalConstants.APP_USER, this.user());
+    this.orgService.setCompany(_company, this._isAuthenticated);
   }
 
   setConfUrl(url: string): void {
-    if (url.endsWith('/')) {
-      url = url.substring(0, url.length - 1);
-    }
-    this.urlService = url;
-    this.ls.setItem(LocalConstants.URL_CONF, url);
+    this.orgService.setConfUrl(url);
   }
 
   obtenerPrincipalOrganizacion(): Observable<OrganizacionDTO> {
-    return this.http.get<OrganizacionDTO>(
-      this.ls.getUrlAccess('/main/obtenerPrincipalOrganizacion'),
-    );
+    return this.orgService.obtenerPrincipalOrganizacion();
   }
 
   private getURL(): Observable<string> {
@@ -380,7 +292,7 @@ export class LoginService {
   }
 
   changePictureUser(fileToUpload: File, _server: string): Observable<UsuarioDTO> {
-    const endpoint = this.ls.getUrlAccess('/rest/changePicture', _server);
+    const endpoint = this.orgService.getUrlAccess('/rest/changePicture', _server);
     const formData = new FormData();
     formData.append('file', fileToUpload, fileToUpload.name);
     return this.http.post<UsuarioDTO>(endpoint, formData);
@@ -416,27 +328,20 @@ export class LoginService {
   }
 
   configureOrganization(organization: OrganizacionDTO): void {
-    this.setCompany(organization);
+    this.orgService.setCompany(organization, this._isAuthenticated);
     if (!this._isAuthenticated && organization?.publicToken) {
-      this.token = organization.publicToken;
-      this.ls.setItem(LocalConstants.JWT_TOKEN, organization.publicToken);
+      const existingToken = this.tokenService.getJwtToken() as string | null;
+      if (existingToken && !this.tokenService.isTokenExpired(existingToken)) {
+        this.tokenService.token = existingToken;
+        return;
+      }
+      this.tokenService.token = organization.publicToken;
+      this.tokenService.setToken(organization.publicToken);
       this.checkTokenIsValid().subscribe();
     }
   }
 
   validateAccessModule(pModuleKey: string): boolean {
-    const currentCompany = this.company();
-    if (currentCompany) {
-      const _modules = PlantillaHelper.buscarValorMultiple(
-        currentCompany.propiedades,
-        PlantillaHelper.APP_MODULES,
-      );
-      if (_modules) {
-        for (const element of _modules) {
-          if (element.valor === pModuleKey) return true;
-        }
-      }
-    }
-    return false;
+    return this.orgService.validateAccessModule(pModuleKey);
   }
 }

@@ -1,9 +1,13 @@
 import { Injectable, inject } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { firstValueFrom } from 'rxjs';
+import { ConfirmDialogComponent, ConfirmDialogData } from '@/app/shared/components/confirm-dialog/confirm-dialog.component';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationCenterService {
   private readonly snackBar = inject(MatSnackBar);
+  private readonly dialog = inject(MatDialog);
 
   info(title: string, text?: string) {
     this.snackBar.open(`${title}${text ? ': ' + text : ''}`, 'Cerrar', { duration: 5000 });
@@ -21,8 +25,14 @@ export class NotificationCenterService {
     this.snackBar.open(`${title}${text ? ': ' + text : ''}`, 'Cerrar', { duration: 5000 });
   }
 
-  confirm(title: string, text?: string): Promise<boolean> {
-    return Promise.resolve(true);
+  async confirm(title: string, text?: string): Promise<boolean> {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: { title, message: text } as ConfirmDialogData,
+    });
+
+    const result = await firstValueFrom(dialogRef.afterClosed());
+    return result === true;
   }
 
   toast(title: string, text?: string, _opts?: Record<string, unknown>) {

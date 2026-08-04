@@ -9,10 +9,7 @@
         "files": [
           "/favicon.png",
           "/index.html",
-          "/manifest.webmanifest",
-          "/*.css",
-          "/*.js",
-          "/icons/*"
+          "/manifest.webmanifest"
         ]
       }
     },

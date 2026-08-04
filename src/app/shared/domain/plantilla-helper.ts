@@ -3,6 +3,14 @@ import {
   PedidoVentaDTO,
 } from '@/app/domains/admin/modules/neuron/domain/sw42.domain';
 import { PropiedadDTO } from '@/app/shared/domain/shared.domain';
+import {
+  buscarPropiedad,
+  buscarValor,
+  buscarValorMultipleFromManyKeys,
+  buscarValorMultiple,
+  agregarPropiedad,
+  isEmpty,
+} from './plantilla-utils';
 
 export class PlantillaHelper {
   /*******************GENERALES***************/
@@ -164,50 +172,26 @@ export class PlantillaHelper {
     PlantillaHelper.FECHA_MINIMA_CAMPO,
   ];
 
-  static buscarPropiedad(
-    propiedades: PropiedadDTO[],
-    key: string,
-  ): PropiedadDTO | null {
-    if (propiedades) {
-      return propiedades.find((property: PropiedadDTO) => property.key === key) ?? null;
-    }
-    return null;
+  static buscarPropiedad(propiedades: PropiedadDTO[], key: string): PropiedadDTO | null {
+    return buscarPropiedad(propiedades, key);
   }
 
   static buscarValor(propiedades: PropiedadDTO[], key: string): string {
-    const p = PlantillaHelper.buscarPropiedad(propiedades, key);
-    return p ? p.valor : '';
+    return buscarValor(propiedades, key);
   }
 
   static buscarValorMultipleFromManyKeys(
     propiedades: PropiedadDTO[],
     keys: string[],
   ): PropiedadDTO[] | null {
-    if (!propiedades || propiedades.length === 0) {
-      return null;
-    }
-    if (!keys || keys.length === 0) {
-      return null;
-    }
-    const result: PropiedadDTO[] = [];
-    keys.forEach((key) => {
-      propiedades.forEach((element) => {
-        if (element.key === key) {
-          result.push(element);
-        }
-      });
-    });
-    return result.length === 0 ? null : result;
+    return buscarValorMultipleFromManyKeys(propiedades, keys);
   }
 
   static buscarValorMultiple(
     propiedades: PropiedadDTO[],
     key: string,
   ): PropiedadDTO[] | null {
-    if (key == null) {
-      return null;
-    }
-    return this.buscarValorMultipleFromManyKeys(propiedades, [key]);
+    return buscarValorMultiple(propiedades, key);
   }
 
   static agregarPropiedad(
@@ -215,18 +199,11 @@ export class PlantillaHelper {
     key: string,
     value: string,
   ): PropiedadDTO[] {
-    if (propiedades == null) {
-      propiedades = [];
-    }
-    const newParam = new PropiedadDTO();
-    newParam.key = key;
-    newParam.valor = value;
-    propiedades.push(newParam);
-    return propiedades;
+    return agregarPropiedad(propiedades, key, value);
   }
 
   static isEmpty(propiedades: PropiedadDTO[], key: string): boolean {
-    return !this.buscarPropiedad(propiedades, key);
+    return isEmpty(propiedades, key);
   }
 }
 

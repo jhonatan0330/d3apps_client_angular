@@ -6,11 +6,10 @@ import {
   ViewContainerRef,
   ViewChild,
   HostListener,
-  Type,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
 } from '@angular/core';
-import { CommonModule, DecimalPipe, DatePipe, CurrencyPipe, TitleCasePipe, SlicePipe } from '@angular/common';
+import { DatePipe, CurrencyPipe, SlicePipe } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,7 +23,6 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
 
 import {
   DetallePedidoVentaDTO,
@@ -42,10 +40,11 @@ import { DocumentoPlantillaCaracteristicaEnum, StatesEnum } from '@/app/domains/
 import { ApiService } from '@/app/domains/admin/modules/neuron/services/api.service';
 import { TemplateService } from '@/app/domains/admin/modules/neuron/services/template.service';
 import { UtilsService } from '@/app/domains/admin/modules/neuron/services/utils.service';
+import { FormActionsService } from '@/app/domains/admin/modules/neuron/services/form-actions.service';
+import { FormTransitionsService } from '@/app/domains/admin/modules/neuron/services/form-transitions.service';
+import { FormReportsService } from '@/app/domains/admin/modules/neuron/services/form-reports.service';
 import { getComponent } from '@/app/domains/admin/modules/neuron/helpers/form-helper';
 import { PlantillaHelper } from '@/app/shared/domain/plantilla-helper';
-import { PropiedadDTO } from '@/app/shared/domain/shared.domain';
-import { LocalConstants, LocalStoreService } from '@/app/shared/services/local-store.service';
 import { ImageFormatPipe } from '@/app/shared/pipes/image-format.pipe';
 import { LoginService } from '@/app/domains/auth/services/login.service';
 import { IDynamicControl } from '../controls/base/base.interface';
@@ -53,9 +52,8 @@ import { IDynamicControl } from '../controls/base/base.interface';
 @Component({
   selector: 'app-form',
   templateUrl: './form.html',
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatDialogModule,
@@ -83,9 +81,10 @@ export default class FormComponent implements OnInit, AfterViewInit {
   private readonly templateService = inject(TemplateService);
   private readonly api = inject(ApiService);
   public readonly jwt = inject(LoginService);
-  private readonly ls = inject(LocalStoreService);
   private readonly utilsService = inject(UtilsService);
-  private readonly router = inject(Router);
+  private readonly actionsService = inject(FormActionsService);
+  private readonly transitionsService = inject(FormTransitionsService);
+  private readonly reportsService = inject(FormReportsService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly cdr = inject(ChangeDetectorRef);
 
@@ -238,28 +237,17 @@ export default class FormComponent implements OnInit, AfterViewInit {
     }
 
     this.pedido!.llaveTabla = value.llaveTabla;
-    for (const _report of this.reportes) {
-      if (PlantillaHelper.buscarValor(_report.propiedades, PlantillaHelper.REP_AUTOPRINT)) {
-        this.showReport(_report);
-      }
-    }
+    this.reportsService.autoPrintReports(this.reportes, this.pedido!);
     this.submitted = false;
 
     if (successFullText) {
       this.utilsService.modalSuccess(successFullText);
     }
 
-    if (this.plantilla?.estados && this.plantilla.estados.length > 0) {
-      for (const estado of this.plantilla.estados) {
-        if (estado.llaveTabla === value.estadoExpediente && estado.transiciones?.length) {
-          for (const _transition of estado.transiciones) {
-            if (_transition.rapida) {
-              this.reloadScreen(_transition.plantilla);
-              return;
-            }
-          }
-        }
-      }
+    const rapidTemplate = this.transitionsService.resolveRapidTransition(value, this.plantilla!);
+    if (rapidTemplate) {
+      this.actionsService.reloadScreen(this.pedido!, this.dialogRef, rapidTemplate);
+      return;
     }
 
     if (this.dialogRef) {
@@ -478,7 +466,7 @@ export default class FormComponent implements OnInit, AfterViewInit {
     if (this.instruccionCrear) this.toogleScreen();
     this.showFields();
     this.resolvePropiertiesForm();
-    this.getReports();
+    this.reportes = this.reportsService.getReports(this.plantilla, this.pedido);
     if (this.openQuickTransitionAfterSave) {
       this.crearPlantilla(this.openQuickTransitionAfterSave, this.pedido);
     }
@@ -598,55 +586,12 @@ export default class FormComponent implements OnInit, AfterViewInit {
   showActions(): void {
     let _estadollave = this.pedido!.estadoExpediente;
     if (!_estadollave) _estadollave = this.pedido!.estado;
-    this.getTransitionsOfTemplate(this.plantilla!, _estadollave, this.pedido!, false);
 
-    if (this.pedido!.llaveTabla && this.pedido!.estado === 'A') {
-      for (const _element of this.pedido!.caracteristicas!) {
-        if (_element.campoDTO?.formato === DocumentoPlantillaCaracteristicaEnum.VINCULO) {
-          if (_element.expedientes) {
-            this.getTransitionsOfTemplate(
-              this.templateService.getTemplate(_element.expedientes[0].plantilla!, null)!,
-              _element.expedientes[0].estadoExpediente!, _element.expedientes[0], true);
-          } else {
-            const _property = PlantillaHelper.buscarPropiedad(_element.campoDTO!.propiedades, PlantillaHelper.VINCULO_DATA);
-            if (_property && _property.motivo && !_property.relaciones) {
-              const _templateVinculo = this.templateService.getTemplate(_property.valor, null);
-              if (_templateVinculo) {
-                const _newtransicion = new ProcesoTransicionDTO();
-                _newtransicion.imagen = _templateVinculo.imagen;
-                _newtransicion.plantilla = _templateVinculo.llaveTabla;
-                _newtransicion.nombre = _property.motivo.toUpperCase();
-                this.transiciones.push(_newtransicion);
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+    const baseTransitions = this.transitionsService.getTransitionsOfTemplate(this.plantilla!, _estadollave, this.pedido!, false);
+    this.transiciones.push(...baseTransitions);
 
-  getTransitionsOfTemplate(pTemplate: DocumentoPlantillaDTO, pState: string, pDocumentTransition: PedidoVentaDTO, pIsVinculo: boolean): void {
-    if (!pTemplate?.estados || pTemplate.estados.length === 0) return;
-    for (const _stateElement of pTemplate.estados) {
-      if (_stateElement.llaveTabla === pState) {
-        if (!_stateElement.transiciones || _stateElement.transiciones.length === 0) return;
-        for (const _transition of _stateElement.transiciones) {
-          if (_transition.plantilla) {
-            const _templateTransition = this.templateService.getTemplate(_transition.plantilla, pTemplate.server);
-            if (_templateTransition && !PlantillaHelper.isEmpty(_templateTransition.propiedades, PlantillaHelper.PERMISO_PLANTILLA_CREAR)) {
-              if (pIsVinculo && PlantillaHelper.isEmpty(_transition.propiedades, PlantillaHelper.TRANSICION_VISIBLE_VINCULO)) continue;
-              const _newtransicion = new ProcesoTransicionDTO();
-              _newtransicion.imagen = _templateTransition.imagen;
-              _newtransicion.plantilla = _templateTransition.llaveTabla;
-              _newtransicion.nombre = _transition.nombre;
-              _newtransicion.documentToTransition = pDocumentTransition;
-              this.transiciones.push(_newtransicion);
-            }
-          }
-        }
-        return;
-      }
-    }
+    const vinculoTransitions = this.transitionsService.getVinculoTransitions(this.pedido!, this.plantilla!);
+    this.transiciones.push(...vinculoTransitions);
   }
 
   crearPlantilla(pNextTemplate: string, pDocument?: PedidoVentaDTO): void {
@@ -724,50 +669,20 @@ export default class FormComponent implements OnInit, AfterViewInit {
     return null;
   }
 
-  getReports(): void {
-    if (this.plantilla?.reportes) {
-      for (const reporte of this.plantilla.reportes) {
-        const propVisibleState = PlantillaHelper.buscarValorMultiple(reporte.propiedades, PlantillaHelper.REP_VISIBLE_STATE);
-        if (!propVisibleState || !this.pedido?.estadoExpediente || propVisibleState.find((x) => x.valor === this.pedido!.estadoExpediente)) {
-          this.reportes.push(reporte);
-        }
-      }
-    }
-  }
-
-  showReport(reporte: ReporteBaseDTO): void {
-    if (!reporte) return;
-    let stringURL = reporte.servidorUrl;
-    if (!stringURL) stringURL = (this.ls.getItem(LocalConstants.URL_CONF) as string) || '';
-    stringURL += '/reporte?nombre=' + reporte.llaveTabla + '&P_KEY=' + this.pedido!.llaveTabla + '&P_TOKEN=' + this.templateService.getTokenConnection(stringURL);
-    if (reporte.variables) stringURL += '&' + reporte.variables;
-    window.open(stringURL, '_blank');
-  }
-
   showMassive(): void {
     if (this.canMassive) {
-      let redirect = 'massive/' + this.plantilla!.llaveTabla;
-      if (this.plantilla!.server) redirect += '/' + this.plantilla!.server;
-      this.router.navigateByUrl(redirect);
-      this.dialogRef.close();
+      this.actionsService.showMassive(this.plantilla!.llaveTabla, this.plantilla!.server, this.dialogRef);
     }
   }
 
   showTransfer(): void {
     if (this.canTransfer) {
-      this.utilsService.modalTransfer(
-        this.pedido!.llaveTabla, this.pedido!.estadoExpediente!, this.pedido!.plantilla!, this.plantilla!.server,
-      ).then((res) => {
-        if (res && this.dialogRef) this.dialogRef.close();
-      });
+      this.actionsService.showTransfer(this.pedido!, this.plantilla!.llaveTabla, this.plantilla!.server, this.dialogRef);
     }
   }
 
   showTrace(): void {
-    this.utilsService.modalTrace(
-      this.pedido!.llaveTabla, this.pedido!.plantilla!, this.plantilla!.server,
-      this.pedido!.nombre!, this.pedido!.estadoNombre!, this.pedido!.estado!,
-    );
+    this.actionsService.showTrace(this.pedido!, this.plantilla!.llaveTabla, this.plantilla!.server);
   }
 
   showChangeState(): void {
@@ -807,36 +722,21 @@ export default class FormComponent implements OnInit, AfterViewInit {
     });
   }
 
-  getURLDocument(): string {
-    return window.location.origin + '/main/' + this.plantilla!.llaveTabla + '/' + this.pedidoBase!.llaveTabla;
-  }
-
   sendWhatsApp(): void {
-    window.open('whatsapp://send?text=' + this.getURLDocument(), '_blank');
+    this.actionsService.sendWhatsApp(this.plantilla!.llaveTabla, this.pedidoBase!);
   }
 
   copyUrl(): void {
-    navigator.clipboard.writeText(this.getURLDocument()).then(() => {
-      this.snackBar.open('Link copiado al portapapeles', '', { duration: 1000 });
-    });
+    this.actionsService.copyUrl(this.plantilla!.llaveTabla, this.pedidoBase!);
   }
 
   copyName(): void {
-    if (this.pedido?.nombre) {
-      navigator.clipboard.writeText(this.pedido.nombre).then(() => {
-        this.snackBar.open(this.pedido!.nombre + ' Copiado al portapapeles', '', { duration: 1000 });
-      });
-    }
+    this.actionsService.copyName(this.pedido!);
   }
 
   toogleScreen(): void {
     this.fullScreen = !this.fullScreen;
     this.styleSizePop = this.fullScreen ? 'width: 98vw;' : '';
-  }
-
-  reloadScreen(pTemplate?: string): void {
-    this.dialogRef.close();
-    this.utilsService.modalWithParams(this.pedido!, false, undefined, false, pTemplate);
   }
 
   @HostListener('document:keydown', ['$event'])
@@ -856,36 +756,15 @@ export default class FormComponent implements OnInit, AfterViewInit {
   }
 
   duplicate(): void {
-    const _doc = new PedidoVentaDTO();
-    _doc.plantilla = this.plantilla!.llaveTabla;
-    _doc.caracteristicas = [];
-    for (const campoDocumento of this.pedido!.caracteristicas!) {
-      const block = PlantillaHelper.isEmpty(campoDocumento.campoDTO?.propiedades, PlantillaHelper.PERMISO_CAMPO_BLOQUEAR);
-      if (
-        campoDocumento.campoDTO &&
-        block &&
-        [
-          DocumentoPlantillaCaracteristicaEnum.FECHA,
-          DocumentoPlantillaCaracteristicaEnum.NUMERO,
-          DocumentoPlantillaCaracteristicaEnum.PROCESO,
-          DocumentoPlantillaCaracteristicaEnum.TEXTO,
-          DocumentoPlantillaCaracteristicaEnum.PRODUCTO,
-          DocumentoPlantillaCaracteristicaEnum.CONFIGURACION,
-        ].includes(campoDocumento.campoDTO.formato as DocumentoPlantillaCaracteristicaEnum)
-      ) {
-        const campoBase = new PedidoVentaCaracteristicaDTO();
-        campoBase.campo = campoDocumento.campo;
-        if (!campoDocumento.dependientes && !(campoDocumento.campoDTO.formato === DocumentoPlantillaCaracteristicaEnum.PROCESO && !campoDocumento.valorOpcion)) {
-          campoBase.valorText = campoDocumento.valorText;
-          campoBase.valorNumero = campoDocumento.valorNumero;
-          campoBase.valorFecha = campoDocumento.valorFecha;
-          campoBase.valorOpcion = campoDocumento.valorOpcion;
-        }
-        _doc.caracteristicas.push(campoBase);
-      }
-    }
-    _doc.server = this.plantilla!.server;
-    this.utilsService.modalWithParams(_doc, false);
+    this.actionsService.duplicate(this.pedido!, this.plantilla!.llaveTabla, this.plantilla!.server);
+  }
+
+  reloadScreen(): void {
+    this.actionsService.reloadScreen(this.pedido!, this.dialogRef);
+  }
+
+  showReport(reporte: ReporteBaseDTO): void {
+    this.actionsService.showReport(reporte, this.pedido!);
   }
 
   reviewFieldsVisibility(): void {
